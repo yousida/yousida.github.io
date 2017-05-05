@@ -402,9 +402,9 @@
 <li><p>ByteBuffer（最常用），CharBuffer，ShotBuffer，IntBuffer，LongBuffer，DoubleBuffer，FloatBuffer。</p>
 </li>
 </ul>
-<p><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio1.png" alt="image"></p>
+<p><img src="\img\JavaNioImage\JavaNio1.png" alt="image"></p>
 <ul>
-<li>几个属性的关系：==0《=mark&lt;=position&lt;=limit&lt;=capacity==</li>
+<li>几个属性的关系：0《=mark&lt;=position&lt;=limit&lt;=capacity</li>
 </ul>
 <h3 id="基本方法"><a href="#基本方法" class="headerlink" title="基本方法"></a>基本方法</h3><ul>
 <li><p>allocate():创建一个非直接缓冲区，将缓冲区创建在Jvm内存中。</p>
@@ -428,19 +428,19 @@
 </ul>
 <p>如：创建一个长度为10的缓冲区</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ByteBuffer byteBuffer=ByteBuffer.allocate(10);</div></pre></td></tr></table></figure>
-<p>图示关系<br><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio2.png" alt="image"></p>
+<p>图示关系<br><img src="\img\JavaNioImage\JavaNio2.png" alt="image"></p>
 <p>存入缓冲区</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String str=&quot;abcde&quot;;</div><div class="line">byteBuffer.put(str.getBytes());</div></pre></td></tr></table></figure>
-<p>图示关系<br><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio3.png" alt="image"></p>
+<p>图示关系<br><img src="\img\JavaNioImage\JavaNio3.png" alt="image"></p>
 <p>切换为读模式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">byteBuffer.flip();</div></pre></td></tr></table></figure>
-<p>图示关系<br><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio4.png" alt="image"></p>
+<p>图示关系<br><img src="\img\JavaNioImage\JavaNio4.png" alt="image"></p>
 <p>读取数据</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">byte[] b=new byte[byteBuffer.limit()];</div><div class="line">byteBuffer.get(b);</div><div class="line"></div><div class="line">//打印结果.</div><div class="line">System.out.println(new String(b);</div></pre></td></tr></table></figure>
 <p>数据读取完成后，position指向了limit位置。</p>
 <h3 id="非直接缓冲区和直接缓冲区"><a href="#非直接缓冲区和直接缓冲区" class="headerlink" title="非直接缓冲区和直接缓冲区"></a>非直接缓冲区和直接缓冲区</h3><ul>
-<li>非直接缓冲区：每一次IO操作，虚拟机会将缓冲区的内容复制到中间缓冲区中。<br><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio5.png" alt="image"></li>
-<li>直接缓冲区：可以使用物理内存的映射。<br><img src="C:\Users\YsdL\Desktop\JavaNioImage\JavaNio6.png" alt="image"></li>
+<li>非直接缓冲区：每一次IO操作，虚拟机会将缓冲区的内容复制到中间缓冲区中。<br><img src="\img\JavaNioImage\JavaNio5.png" alt="image"></li>
+<li>直接缓冲区：可以使用物理内存的映射。<br><img src="\img\JavaNioImage\JavaNio6.png" alt="image"></li>
 </ul>
 <h3 id="通道-Channel"><a href="#通道-Channel" class="headerlink" title="通道(Channel)"></a>通道(Channel)</h3><p>负责缓冲数据的传输。</p>
 <p>通道分类：FileChannel，SocketChannel，ServerSocketChannel，DatagramChannel。</p>
@@ -458,7 +458,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">1.txt中的内容</div><div class="line">天龙八部</div><div class="line">英雄联盟</div><div class="line">守望先锋</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public void FenSan() throws Exception&#123;</div><div class="line"></div><div class="line">		//RandomAccessFile支持任意方式的访问.可以在任意地方读写数据.</div><div class="line">		//rw代表读写模式.</div><div class="line">		RandomAccessFile raf=new RandomAccessFile(&quot;1.txt&quot;,&quot;rw&quot;);</div><div class="line">		</div><div class="line">		//获取通道.</div><div class="line">		FileChannel channel=raf.getChannel();</div><div class="line">		</div><div class="line">		//缓冲区.</div><div class="line">		ByteBuffer buf1=ByteBuffer.allocate(10);</div><div class="line">		ByteBuffer buf2=ByteBuffer.allocate(1024);</div><div class="line">		</div><div class="line">		ByteBuffer[] bufs=&#123;buf1,buf2&#125;;</div><div class="line">		</div><div class="line">		//分散读.</div><div class="line">		channel.read(bufs);</div><div class="line">		</div><div class="line">		System.out.println(new String(bufs[0].array(),0,bufs[0].limit()));</div><div class="line">		System.out.println(&quot;-----&quot;);</div><div class="line">		System.out.println(new String(bufs[1].array(),0,bufs[1].limit()));</div><div class="line">		</div><div class="line">		//聚集写.</div><div class="line">		RandomAccessFile raf1=new RandomAccessFile(&quot;2.txt&quot;,&quot;rw&quot;);</div><div class="line">		FileChannel channel1=raf1.getChannel();</div><div class="line">		</div><div class="line">		for(ByteBuffer b:bufs)&#123;</div><div class="line">			</div><div class="line">			b.flip();</div><div class="line">			channel1.write(b);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">输出结果：</div><div class="line">天龙八部</div><div class="line"></div><div class="line">-----</div><div class="line">英雄联盟</div><div class="line">守望先锋</div></pre></td></tr></table></figure>
-<h3 id="选择器"><a href="#选择器" class="headerlink" title="选择器"></a>选择器</h3><p>==选择器提供选择执行已经就绪的任务能力，使得单线程能有效的同时管理多个I/O通道。==</p>
+<h3 id="选择器"><a href="#选择器" class="headerlink" title="选择器"></a>选择器</h3><p>选择器提供选择执行已经就绪的任务能力，使得单线程能有效的同时管理多个I/O通道。</p>
 <p>选择器执行：</p>
 <ul>
 <li>创建一个或多个可选择的通道。</li>
@@ -511,6 +511,14 @@
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
+    
+        <a href="/2017/05/03/策略模式/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
     
 </nav>
 
@@ -596,13 +604,28 @@
             </a>
             <ul class="dropdown-menu">
             <li>
-                <a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">1</span></a>
+                <a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">2</span></a>
             </ul>
         </li>
         
     
 
     <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/Java基础/">Java基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">1</span></a>
+            </ul>
+        </li>
+        
     
 
     <!-- Pages  -->
