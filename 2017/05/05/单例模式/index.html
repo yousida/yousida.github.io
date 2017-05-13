@@ -10,7 +10,7 @@
     
     <title>
         
-            策略模式 | 
+            单例模式 | 
         
         游思达的博客
     </title>
@@ -58,7 +58,7 @@
     <!-- The Open Graph protocol -->
     <meta property="og:url" content="http://yoursite.com">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="策略模式 | 游思达的博客">
+    <meta property="og:title" content="单例模式 | 游思达的博客">
     <meta property="og:description" content="落霞与孤鹜齐飞，秋水共长天一色。">
     
 
@@ -247,7 +247,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#问题"><span class="post-toc-number">1.</span> <span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#解决"><span class="post-toc-number">2.</span> <span class="post-toc-text">解决</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#设计鸭子行为"><span class="post-toc-number">3.</span> <span class="post-toc-text">设计鸭子行为</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#实现"><span class="post-toc-number">4.</span> <span class="post-toc-text">实现</span></a></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基础"><span class="post-toc-number">1.</span> <span class="post-toc-text">基础</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#懒汉式"><span class="post-toc-number">2.</span> <span class="post-toc-text">懒汉式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#饿汉式"><span class="post-toc-number">3.</span> <span class="post-toc-text">饿汉式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#双重检查加锁"><span class="post-toc-number">4.</span> <span class="post-toc-text">双重检查加锁</span></a></li></ol>
 
         <!--
         <li class="mdl-menu__item">
@@ -284,7 +284,7 @@
         
     
             <p class="article-headline-p">
-                策略模式
+                单例模式
             </p>
         </div>
 
@@ -303,7 +303,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>游思达</strong>
-        <span>4月 10, 2017</span>
+        <span>5月 05, 2017</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -343,7 +343,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=策略模式&url=http://yoursite.com//2017/04/10/策略模式/index.html&pic=&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=单例模式&url=http://yoursite.com//2017/05/05/单例模式/index.html&pic=&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -352,7 +352,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=策略模式&url=http://yoursite.com//2017/04/10/策略模式/index.html&via=游思达" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=单例模式&url=http://yoursite.com//2017/05/05/单例模式/index.html&via=游思达" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -361,7 +361,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/04/10/策略模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/05/05/单例模式/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -370,7 +370,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/04/10/策略模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/05/05/单例模式/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -394,47 +394,21 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>假设有个Duck超类，有两个基本属性：嘎嘎叫（quack）和游泳（Swim），还有一个代表Duck外观的Display()方法，类图如下：</p>
-<p><img src="\img\设计模式\1.png" alt="image"></p>
-<p>有两个子类绿头鸭和红头鸭继承了Duck超类，类图如下：</p>
-<p><img src="\img\设计模式\2.png" alt="image"></p>
-<p><img src="\img\设计模式\3.png" alt="image"></p>
-<p>现在若是让鸭进化，具有飞行的能力，最普遍的做法在Duck类中添加fly()方法，类图如下：</p>
-<p><img src="\img\设计模式\4.png" alt="image"></p>
-<p>绿头鸭和红头鸭继承Duck类，具有飞行的能力。</p>
-<p>但是，并不是所有的鸭都会飞，如橡皮鸭。在超类中添加公共行为会让某些不具有该行为的子类也具有该行为。</p>
-<p>如果采用上述方法，只能在子类中重写该方法，如下图：</p>
-<p><img src="\img\设计模式\5.png" alt="image"></p>
-<p>可能还可以使用接口，新建一个Flyable接口，具有飞行能力的鸭实现该接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Flyable&#123;</div><div class="line">       public void fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果有一天，鸭的飞行姿势优雅了，那么实现Flyable接口的所有鸭需要修改代码。</p>
-<p>我们发现，存在以下问题</p>
+        <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>某些对象只需要一个实例，如线程池。</p>
+<p>单例模式：一个类只有一个实例，并提供一个全局访问点。</p>
+<h2 id="懒汉式"><a href="#懒汉式" class="headerlink" title="懒汉式"></a>懒汉式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	//利用静态变量来记录Singleton的唯一实例.</div><div class="line">	private static Singletion uniqueInstance;</div><div class="line">	</div><div class="line">	//构造器声明为私有的.只有本类内才可以调用构造器.</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		</div><div class="line">		if(uniqueInstance==null)</div><div class="line">			uniqueInstance=new Singletion();</div><div class="line">		</div><div class="line">		return uniqueInstance;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Tips：</p>
 <ul>
-<li>并非所有的子类鸭都具有父类鸭的行为，继承不是合适的解决方法。</li>
-<li>虽然可以使用接口，但造成代码无法复用。</li>
+<li>构造函数private类型，只有本类内能调用构造函数。</li>
+<li>静态方法可以通过类调用，不用实例化类。</li>
+<li>即可以使用静态方法调用private类型的构造函数。</li>
 </ul>
-<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>我们可以发现，在Duck类中存在不变化的行为，如Swim()；存在变化的行为，如Fly()和quack()。为了区分变化部分和不变化部分，我们建立两种完全隔离Duck的类，一个和Fly有关，一个和quack有关。</p>
-<p><img src="\img\设计模式\6.png" alt="image"></p>
-<h3 id="设计鸭子行为"><a href="#设计鸭子行为" class="headerlink" title="设计鸭子行为"></a>设计鸭子行为</h3><p>我们使用接口代表每个行为，比如：FlyBehavoir和QuackBehavior，而行为的实现则实现行为接口，如下图：</p>
-<p><img src="\img\设计模式\7.png" alt="image"></p>
-<p>Duck类不负责实现Flying和Quacking接口，而由实现接口的类实现Fly和Quack，这些类称为行为类。</p>
-<p>在我们的新设计中，实际的实现不会绑定在子类中，而是在实现行为接口的行为类中。</p>
-<p>新设计称为策略模式，策略模式定义算法族，分别封装，让它们之间可以相互替换，此模式让算法的变化独立于算法客户。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>在Duck类中，加入两个实例变量FlyBehavoir和QuackBehavior（接口类型），每个鸭对象会动态的设置变量以在运行的时候引用正确的行为，如下图：</p>
-<p><img src="\img\设计模式\8.png" alt="image"></p>
-<p>代码实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//鸭超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为接口.</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	QuackBehavior qucakBehavior;</div><div class="line">	</div><div class="line">	//取代fly.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.Fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代quack.</div><div class="line">	void performQuack()&#123;</div><div class="line">		qucakBehavior.quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//不变的部分.</div><div class="line">	void swim()&#123;&#125;;</div><div class="line">	void display()&#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//嘎嘎叫的行为接口.</div><div class="line">public interface QuackBehavior&#123;</div><div class="line">	void quack();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//嘎嘎叫的行为类.</div><div class="line">public class Quack implements QuackBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void quack()&#123;</div><div class="line">		System.out.println(&quot;嘎嘎&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//飞行的行为接口.</div><div class="line">public interface FlyBehavior&#123;</div><div class="line">	void Fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//飞行的行为类.</div><div class="line">public class Fly implements FlyBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void Fly()&#123;</div><div class="line">		System.out.println(&quot;飞行啦&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//飞行的行为类.</div><div class="line">public class notFly implements FlyBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void Fly()&#123;</div><div class="line">		System.out.println(&quot;不会飞&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//绿头鸭.</div><div class="line">public class GreentDuck extends Duck&#123;</div><div class="line">	</div><div class="line">	//执行构造函数数确定行为类.</div><div class="line">	public GreentDuck()&#123;</div><div class="line">		flyBehavior=new Fly();</div><div class="line">		qucakBehavior=new Quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	@Override</div><div class="line">	void display()&#123;</div><div class="line">		System.out.println(&quot;我是绿头鸭&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">//测试.</div><div class="line">public class Test&#123;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		GreenDuck gDuck=new GreenDuck();</div><div class="line">		gDuck.performFly();</div><div class="line">		gDuck.performQuack();</div><div class="line">		</div><div class="line">		//输出.</div><div class="line">		飞行啦</div><div class="line">		嘎嘎</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上述实现，我们在子类的构造函数中指定行为类，下面采用setter()方法来指定行为类.</p>
-<p>在Duck中，添加两个方法setQuackBehavior()和setFlyBehavior()。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">//鸭超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为接口.</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	QuackBehavior qucakBehavior;</div><div class="line">	</div><div class="line">	public void setflyBehavior(FlyBehavior flyBehavior)&#123;</div><div class="line">		this.flyBehavior=flyBehavior;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public void setquackBehavior(QuackBehavior qucakBehavior)&#123;</div><div class="line">		this.qucakBehavior=qucakBehavior;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代fly.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.Fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代quack.</div><div class="line">	void performQuack()&#123;</div><div class="line">		qucakBehavior.quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//不变的部分.</div><div class="line">	void swim()&#123;&#125;;</div><div class="line">	void display()&#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//测试.</div><div class="line">public class Test&#123;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		GreenDuck gDuck=new GreenDuck();</div><div class="line">		gDuck.performFly();</div><div class="line"></div><div class="line">		//改变飞行行为.</div><div class="line">		gDuck.setflyBehavior(new notFly());</div><div class="line">		gDuck.performFly();</div><div class="line">		</div><div class="line">		//输出.</div><div class="line">		飞行啦</div><div class="line">		不会飞</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>多线程问题：线程1执行if(uniqueInstance==null)后创建Singletion()之前，线程2执行if(uniqueInstance==null)为True，执行new Singletion()。</p>
+<p>解决：使用Synchronized修饰。</p>
+<p>懒汉式：线程不安全；需要类实例才创建。</p>
+<h2 id="饿汉式"><a href="#饿汉式" class="headerlink" title="饿汉式"></a>饿汉式</h2><p>线程安全，在执行类构造器时(类加载的初始化)准备好静态对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	private static Singletion singletion=new Singletion();</div><div class="line">	</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		return singletion;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="双重检查加锁"><a href="#双重检查加锁" class="headerlink" title="双重检查加锁"></a>双重检查加锁</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	private volatile static Singletion uniqueInstance;</div><div class="line">	</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		</div><div class="line">		if(uniqueInstance==null)&#123;</div><div class="line">			</div><div class="line">			//检查实例.如果不存在.进入同步块.</div><div class="line">			synchronized(Singletion.class)&#123;</div><div class="line">				if(uniqueInstance==null)</div><div class="line">					uniqueInstance=new Singletion();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		return uniqueInstance;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
     
 
@@ -461,7 +435,7 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2017/04/23/观察者模式/" id="post_nav-newer" class="prev-content">
+        <a href="/2017/05/13/同步异步和阻塞非阻塞/" id="post_nav-newer" class="prev-content">
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
             </button>
@@ -474,6 +448,14 @@
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
+    
+        <a href="/2017/05/04/浅出Java-Nio/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
     
 </nav>
 
