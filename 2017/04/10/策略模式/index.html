@@ -247,7 +247,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#问题"><span class="post-toc-number">1.</span> <span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#怎么解决"><span class="post-toc-number">2.</span> <span class="post-toc-text">怎么解决</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#设计鸭子行为"><span class="post-toc-number">3.</span> <span class="post-toc-text">设计鸭子行为</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#实现"><span class="post-toc-number">4.</span> <span class="post-toc-text">实现</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#定义"><span class="post-toc-number">5.</span> <span class="post-toc-text">定义</span></a></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#问题"><span class="post-toc-number">1.</span> <span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#解决"><span class="post-toc-number">2.</span> <span class="post-toc-text">解决</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#设计鸭子行为"><span class="post-toc-number">3.</span> <span class="post-toc-text">设计鸭子行为</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#实现"><span class="post-toc-number">4.</span> <span class="post-toc-text">实现</span></a></li></ol>
 
         <!--
         <li class="mdl-menu__item">
@@ -303,7 +303,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>游思达</strong>
-        <span>5月 03, 2017</span>
+        <span>4月 10, 2017</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -343,7 +343,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=策略模式&url=http://yoursite.com//2017/05/03/策略模式/index.html&pic=&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=策略模式&url=http://yoursite.com//2017/04/10/策略模式/index.html&pic=&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -352,7 +352,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=策略模式&url=http://yoursite.com//2017/05/03/策略模式/index.html&via=游思达" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=策略模式&url=http://yoursite.com//2017/04/10/策略模式/index.html&via=游思达" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -361,7 +361,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/05/03/策略模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/04/10/策略模式/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -370,7 +370,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/05/03/策略模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/04/10/策略模式/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -394,55 +394,47 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>假设有一个Duck超类，它有两个基本属性：嘎嘎叫（quack）和游泳（Swim），还有一个代表鸭子外观的Display方法，如下图：</p>
+        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>假设有个Duck超类，有两个基本属性：嘎嘎叫（quack）和游泳（Swim），还有一个代表Duck外观的Display()方法，类图如下：</p>
 <p><img src="\img\设计模式\1.png" alt="image"></p>
-<p>有两个子类鸭，绿头鸭和红头鸭，实现如下图：</p>
-<p><img src="\img\设计模式\2.png" alt="image"><br><img src="\img\设计模式\3.png" alt="image"></p>
-<p>现在若是让鸭变为会飞的鸭，你一定会在超类Duck中加上fly（）方法，这样所有的鸭子都会飞了，如下图：</p>
+<p>有两个子类绿头鸭和红头鸭继承了Duck超类，类图如下：</p>
+<p><img src="\img\设计模式\2.png" alt="image"></p>
+<p><img src="\img\设计模式\3.png" alt="image"></p>
+<p>现在若是让鸭进化，具有飞行的能力，最普遍的做法在Duck类中添加fly()方法，类图如下：</p>
 <p><img src="\img\设计模式\4.png" alt="image"></p>
-<p>所有的鸭都会继承fly（），都可以飞了。</p>
-<p>但是，你会发现，并不是所有的鸭子都会飞，如橡皮鸭。在超类中添行为为会让某些不适合该行为的子类也具有该行为。你可能会想在橡皮鸭子类中覆盖掉fly（）方法，变成什么都不做，如下图：</p>
+<p>绿头鸭和红头鸭继承Duck类，具有飞行的能力。</p>
+<p>但是，并不是所有的鸭都会飞，如橡皮鸭。在超类中添加公共行为会让某些不具有该行为的子类也具有该行为。</p>
+<p>如果采用上述方法，只能在子类中重写该方法，如下图：</p>
 <p><img src="\img\设计模式\5.png" alt="image"></p>
-<p>如果又有一种叫做诱饵鸭，既不会飞也不会叫……</p>
-<p>聪明的你肯定想到了使用接口来解决该问题，将fly从超类中取出来，放进一个flyable接口中，只要会飞的鸭子实现该接口；同理，也可以创建一个Quackable接口，如下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public interface Flyable&#123;</div><div class="line"></div><div class="line">	public void fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public interface Quackable&#123;</div><div class="line"></div><div class="line">	public void Quackable();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>但是这会带来一个更为巨大的问题，如果要修改会飞鸭子的飞行姿势，那么继承该接口的鸭子都需要修改！</p>
-<p>我们知道，并非所有的子类都具有飞和嘎嘎叫的行为，所以继承并不是适当的解决方式；虽然Flyable和Quackable可以解决一部分问题，但是却造成了代码无法复用。</p>
-<h3 id="怎么解决"><a href="#怎么解决" class="headerlink" title="怎么解决"></a>怎么解决</h3><p>我们发现，在Duck类中有些是不需要变化的，如Swim（）；有些是需要变化的，如Fly（）和quack（）。为了要分开变化和不会变化的部分，我们准备建立两组类（完全远离Duck类），一个是和Fly相关的，一个是和quack相关的。</p>
-<p>我们知道在Duck类中的fly（）和quack（）会随着鸭子的不同而改变，为了把这两个类从Duck类中区分出来，我们将把它们从Duck类中取出来，建立一个新类来代表每个行为，如下图：</p>
+<p>可能还可以使用接口，新建一个Flyable接口，具有飞行能力的鸭实现该接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Flyable&#123;</div><div class="line">       public void fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果有一天，鸭的飞行姿势优雅了，那么实现Flyable接口的所有鸭需要修改代码。</p>
+<p>我们发现，存在以下问题</p>
+<ul>
+<li>并非所有的子类鸭都具有父类鸭的行为，继承不是合适的解决方法。</li>
+<li>虽然可以使用接口，但造成代码无法复用。</li>
+</ul>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>我们可以发现，在Duck类中存在不变化的行为，如Swim()；存在变化的行为，如Fly()和quack()。为了区分变化部分和不变化部分，我们建立两种完全隔离Duck的类，一个和Fly有关，一个和quack有关。</p>
 <p><img src="\img\设计模式\6.png" alt="image"></p>
-<h3 id="设计鸭子行为"><a href="#设计鸭子行为" class="headerlink" title="设计鸭子行为"></a>设计鸭子行为</h3><p>我们利用接口代表每个行为，比方说，FlyBehavior和QucakBehavior，而行为的每个实现都将实现其中一个接口，如：</p>
+<h3 id="设计鸭子行为"><a href="#设计鸭子行为" class="headerlink" title="设计鸭子行为"></a>设计鸭子行为</h3><p>我们使用接口代表每个行为，比如：FlyBehavoir和QuackBehavior，而行为的实现则实现行为接口，如下图：</p>
 <p><img src="\img\设计模式\7.png" alt="image"></p>
-<p>我们可以得知，鸭子类不会负责实现Flying和Quacking接口，反而是由我们制造一组其他类专门实现Fly和Quack。这就称为行为类，由行为类而不是Duck类实现行为接口。</p>
-<p>对比以前的做法，要么行为来自Duck超类具体实现；要么继承某个接口由子类自行实现。在我们的新设计中，鸭子的子类将使用接口所表示的行为，实际的实现不会绑定在鸭子的子类中，而是实现行为接口的行为类中。</p>
-<p>这样的设计，可以让飞行和嘎嘎叫的动作被其它对象复用，而我们可以新增一些行为，不会影响到既有的行为类。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>首先，在Dcuk类中，加入两个实例变量，分别为FlyBehavior何QuackBehavior，声明为接口类型，每个鸭子对象都会动态设置这些变量以在运行时引用正确的行为类型（使用performFly（）和performQuack（）），如下图所示：</p>
+<p>Duck类不负责实现Flying和Quacking接口，而由实现接口的类实现Fly和Quack，这些类称为行为类。</p>
+<p>在我们的新设计中，实际的实现不会绑定在子类中，而是在实现行为接口的行为类中。</p>
+<p>新设计称为策略模式，策略模式定义算法族，分别封装，让它们之间可以相互替换，此模式让算法的变化独立于算法客户。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>在Duck类中，加入两个实例变量FlyBehavoir和QuackBehavior（接口类型），每个鸭对象会动态的设置变量以在运行的时候引用正确的行为，如下图：</p>
 <p><img src="\img\设计模式\8.png" alt="image"></p>
-<p>具体实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">//鸭的超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为变量.</div><div class="line">	QuackBehavior quackBehavior;</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	</div><div class="line">	//取代quack()方法.</div><div class="line">	void performQucak()&#123;</div><div class="line">		quackBehavior.quack();</div><div class="line">	&#125;;</div><div class="line">	</div><div class="line">	//取代fly方法.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	void swim()&#123;&#125;</div><div class="line">	void display()&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//鸭超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为接口.</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	QuackBehavior qucakBehavior;</div><div class="line">	</div><div class="line">	//取代fly.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.Fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代quack.</div><div class="line">	void performQuack()&#123;</div><div class="line">		qucakBehavior.quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//不变的部分.</div><div class="line">	void swim()&#123;&#125;;</div><div class="line">	void display()&#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//嘎嘎叫的行为接口.</div><div class="line">public interface QuackBehavior&#123;</div><div class="line">	void quack();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Quack implements QuackBehavior&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void quack()&#123;</div><div class="line">		System.out.println(&quot;嘎嘎叫&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Squeak implements Quackable&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void Quackable()&#123;</div><div class="line">		System.out.println(&quot;吱吱叫.&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//飞行的行为接口.</div><div class="line">public interface FlyBehavior&#123;	</div><div class="line">	void fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class FlyWithWings implements FlyBehavior&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void fly() &#123;</div><div class="line">		System.out.println(&quot;会飞啦.&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class FlyNoWay implements FlyBehavior&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void fly()&#123;</div><div class="line">		System.out.println(&quot;不会飞.&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//绿头鸭子类.</div><div class="line">public class GreenDuck extends Duck&#123;</div><div class="line">	</div><div class="line">	public GreenDuck()&#123;</div><div class="line">		</div><div class="line">		//在实例化绿头鸭时决定是否具有某种行为.</div><div class="line">		quackBehavior=new Quack();</div><div class="line">		flyBehavior=new FlyWithWings();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	@Override</div><div class="line">	void display()&#123;</div><div class="line">		System.out.println(&quot;我是绿头鸭&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">//测试.</div><div class="line">public class M&#123;</div><div class="line"></div><div class="line">	public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">		GreenDuck duck=new GreenDuck();</div><div class="line">		duck.performFly();</div><div class="line">		duck.performQucak();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">输出：</div><div class="line">会飞啦.</div><div class="line">嘎嘎叫</div></pre></td></tr></table></figure>
-<p>上述实现中，我们是在子类的构造函数中来设定鸭子行为，下面将采用setter方法来设定鸭子行为。</p>
-<p>在Duck中，新加入两个方法setQuackBehavior和setFlyBehavior。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">//鸭的超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为变量.</div><div class="line">	QuackBehavior quackBehavior;</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	</div><div class="line">	public void setQuackBehavior(QuackBehavior quackBehavior)&#123;</div><div class="line">		this.quackBehavior=quackBehavior;</div><div class="line">	&#125;</div><div class="line">	public void setFlyBehavior(FlyBehavior flyBehavior)&#123;</div><div class="line">		this.flyBehavior=flyBehavior;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//取代quack()方法.</div><div class="line">	void performQucak()&#123;</div><div class="line">		quackBehavior.quack();</div><div class="line">	&#125;;</div><div class="line">	</div><div class="line">	//取代fly方法.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	void swim()&#123;&#125;</div><div class="line">	void display()&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>建立一个新的鸭子模型：模型鸭（ModelDuck）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public class ModelDuck extends Duck&#123;</div><div class="line">	</div><div class="line">	public ModelDuck() &#123;</div><div class="line">		</div><div class="line">		//一开始.模型鸭是不会飞的.</div><div class="line">		flyBehavior=new FlyNoWay();</div><div class="line">		quackBehavior=new Quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	@Override</div><div class="line">	void display()&#123;</div><div class="line">		System.out.println(&quot;我是模型鸭.&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>我们为模型鸭建立一个利用火箭的飞行模型。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class FlyWithPowered implements FlyBehavior&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void fly()&#123;</div><div class="line">		System.out.println(&quot;我利用火箭飞行!&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>进行测试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class M&#123;</div><div class="line"></div><div class="line">	public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">		ModelDuck duck=new ModelDuck();</div><div class="line">		</div><div class="line">		duck.performFly();</div><div class="line">		duck.setFlyBehavior(new FlyWithPowered());</div><div class="line">		duck.performFly();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">不会飞.</div><div class="line">我利用火箭飞行!</div></pre></td></tr></table></figure>
-<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>经历了上面种种困难并解决后，现在给出策略模式的定义：</p>
-<p>策略模式定义了算法族，分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//嘎嘎叫的行为类.</div><div class="line">public class Quack implements QuackBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void quack()&#123;</div><div class="line">		System.out.println(&quot;嘎嘎&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//飞行的行为接口.</div><div class="line">public interface FlyBehavior&#123;</div><div class="line">	void Fly();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//飞行的行为类.</div><div class="line">public class Fly implements FlyBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void Fly()&#123;</div><div class="line">		System.out.println(&quot;飞行啦&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//飞行的行为类.</div><div class="line">public class notFly implements FlyBehavior&#123;</div><div class="line">	@Override</div><div class="line">	public void Fly()&#123;</div><div class="line">		System.out.println(&quot;不会飞&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//绿头鸭.</div><div class="line">public class GreentDuck extends Duck&#123;</div><div class="line">	</div><div class="line">	//执行构造函数数确定行为类.</div><div class="line">	public GreentDuck()&#123;</div><div class="line">		flyBehavior=new Fly();</div><div class="line">		qucakBehavior=new Quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	@Override</div><div class="line">	void display()&#123;</div><div class="line">		System.out.println(&quot;我是绿头鸭&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">//测试.</div><div class="line">public class Test&#123;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		GreenDuck gDuck=new GreenDuck();</div><div class="line">		gDuck.performFly();</div><div class="line">		gDuck.performQuack();</div><div class="line">		</div><div class="line">		//输出.</div><div class="line">		飞行啦</div><div class="line">		嘎嘎</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述实现，我们在子类的构造函数中指定行为类，下面采用setter()方法来指定行为类.</p>
+<p>在Duck中，添加两个方法setQuackBehavior()和setFlyBehavior()。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">//鸭超类.</div><div class="line">public class Duck&#123;</div><div class="line"></div><div class="line">	//行为接口.</div><div class="line">	FlyBehavior flyBehavior;</div><div class="line">	QuackBehavior qucakBehavior;</div><div class="line">	</div><div class="line">	public void setflyBehavior(FlyBehavior flyBehavior)&#123;</div><div class="line">		this.flyBehavior=flyBehavior;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public void setquackBehavior(QuackBehavior qucakBehavior)&#123;</div><div class="line">		this.qucakBehavior=qucakBehavior;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代fly.</div><div class="line">	void performFly()&#123;</div><div class="line">		flyBehavior.Fly();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//取代quack.</div><div class="line">	void performQuack()&#123;</div><div class="line">		qucakBehavior.quack();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//不变的部分.</div><div class="line">	void swim()&#123;&#125;;</div><div class="line">	void display()&#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//测试.</div><div class="line">public class Test&#123;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		GreenDuck gDuck=new GreenDuck();</div><div class="line">		gDuck.performFly();</div><div class="line"></div><div class="line">		//改变飞行行为.</div><div class="line">		gDuck.setflyBehavior(new notFly());</div><div class="line">		gDuck.performFly();</div><div class="line">		</div><div class="line">		//输出.</div><div class="line">		飞行啦</div><div class="line">		不会飞</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
     
 
@@ -469,7 +461,7 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2017/05/04/浅出Java-Nio/" id="post_nav-newer" class="prev-content">
+        <a href="/2017/04/23/观察者模式/" id="post_nav-newer" class="prev-content">
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
             </button>
@@ -567,7 +559,7 @@
             </a>
             <ul class="dropdown-menu">
             <li>
-                <a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">4</span></a>
+                <a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/04/">四月 2017<span class="sidebar_archives-count">3</span></a>
             </ul>
         </li>
         
@@ -585,7 +577,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                <a class="sidebar_archives-link" href="/categories/Java基础/">Java基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">3</span></a>
+                <a class="sidebar_archives-link" href="/categories/Java-基础/">Java 基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">4</span></a>
             </ul>
         </li>
         
