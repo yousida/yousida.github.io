@@ -10,7 +10,7 @@
     
     <title>
         
-            单例模式 | 
+            Redis+Cookie实现单点登录 | 
         
         游思达的博客
     </title>
@@ -58,7 +58,7 @@
     <!-- The Open Graph protocol -->
     <meta property="og:url" content="http://yoursite.com">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="单例模式 | 游思达的博客">
+    <meta property="og:title" content="Redis+Cookie实现单点登录 | 游思达的博客">
     <meta property="og:description" content="落霞与孤鹜齐飞，秋水共长天一色。">
     
 
@@ -247,7 +247,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基础"><span class="post-toc-number">1.</span> <span class="post-toc-text">基础</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#懒汉式"><span class="post-toc-number">2.</span> <span class="post-toc-text">懒汉式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#饿汉式"><span class="post-toc-number">3.</span> <span class="post-toc-text">饿汉式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#双重检查加锁"><span class="post-toc-number">4.</span> <span class="post-toc-text">双重检查加锁</span></a></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基础"><span class="post-toc-number">1.</span> <span class="post-toc-text">基础</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#实现"><span class="post-toc-number">2.</span> <span class="post-toc-text">实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSO登录的主要逻辑"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">SSO登录的主要逻辑.</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#其他模块中的拦截器"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">其他模块中的拦截器.</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#其他模块中getTokenByUser-方法"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">其他模块中getTokenByUser()方法</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSO模块中接收Token查询Redis"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">SSO模块中接收Token查询Redis</span></a></li></ol></li></ol>
 
         <!--
         <li class="mdl-menu__item">
@@ -284,7 +284,7 @@
         
     
             <p class="article-headline-p">
-                单例模式
+                Redis+Cookie实现单点登录
             </p>
         </div>
 
@@ -303,7 +303,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>游思达</strong>
-        <span>5月 05, 2017</span>
+        <span>5月 14, 2017</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -343,7 +343,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=单例模式&url=http://yoursite.com//2017/05/05/单例模式/index.html&pic=&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Redis+Cookie实现单点登录&url=http://yoursite.com//2017/05/14/Redis-Cookie实现单点登录/index.html&pic=&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -352,7 +352,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=单例模式&url=http://yoursite.com//2017/05/05/单例模式/index.html&via=游思达" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Redis+Cookie实现单点登录&url=http://yoursite.com//2017/05/14/Redis-Cookie实现单点登录/index.html&via=游思达" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -361,7 +361,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/05/05/单例模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/05/14/Redis-Cookie实现单点登录/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -370,7 +370,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/05/05/单例模式/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/05/14/Redis-Cookie实现单点登录/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -394,21 +394,17 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>某些对象只需要一个实例，如线程池。</p>
-<p>单例模式：一个类只有一个实例，并提供一个全局访问点。</p>
-<h2 id="懒汉式"><a href="#懒汉式" class="headerlink" title="懒汉式"></a>懒汉式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	//利用静态变量来记录Singleton的唯一实例.</div><div class="line">	private static Singletion uniqueInstance;</div><div class="line">	</div><div class="line">	//构造器声明为私有的.只有本类内才可以调用构造器.</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		</div><div class="line">		if(uniqueInstance==null)</div><div class="line">			uniqueInstance=new Singletion();</div><div class="line">		</div><div class="line">		return uniqueInstance;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Tips：</p>
+        <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>单点登录：在多系统共存的环境下，用户在某处登录，不用在其他系统中登录，即用户一次登录获得其他系统的信任。</p>
+<p>解决问题：</p>
 <ul>
-<li>构造函数private类型，只有本类内能调用构造函数。</li>
-<li>静态方法可以通过类调用，不用实例化类。</li>
-<li>即可以使用静态方法调用private类型的构造函数。</li>
+<li>存储信任</li>
+<li>验证信任</li>
 </ul>
-<p>多线程问题：线程1执行if(uniqueInstance==null)后创建Singletion()之前，线程2执行if(uniqueInstance==null)为True，执行new Singletion()。</p>
-<p>解决：使用Synchronized修饰。</p>
-<p>懒汉式：线程不安全；需要类实例才创建。</p>
-<h2 id="饿汉式"><a href="#饿汉式" class="headerlink" title="饿汉式"></a>饿汉式</h2><p>线程安全，在执行类构造器时(类加载的初始化)准备好静态对象。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	private static Singletion singletion=new Singletion();</div><div class="line">	</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		return singletion;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="双重检查加锁"><a href="#双重检查加锁" class="headerlink" title="双重检查加锁"></a>双重检查加锁</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class Singletion&#123;</div><div class="line">	</div><div class="line">	private volatile static Singletion uniqueInstance;</div><div class="line">	</div><div class="line">	private Singletion()&#123;&#125;</div><div class="line">	</div><div class="line">	public static Singletion getInstance()&#123;</div><div class="line">		</div><div class="line">		if(uniqueInstance==null)&#123;</div><div class="line">			</div><div class="line">			//检查实例.如果不存在.进入同步块.</div><div class="line">			synchronized(Singletion.class)&#123;</div><div class="line">				if(uniqueInstance==null)</div><div class="line">					uniqueInstance=new Singletion();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		return uniqueInstance;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>本文基于Redis+Cookie实现单点登录。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="SSO登录的主要逻辑"><a href="#SSO登录的主要逻辑" class="headerlink" title="SSO登录的主要逻辑."></a>SSO登录的主要逻辑.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">@Service</div><div class="line">public class UserServiceImpl implements UserService&#123;</div><div class="line"></div><div class="line">	@Autowired</div><div class="line">	private JedisClient jedisClient;</div><div class="line">	</div><div class="line">	@Override</div><div class="line">	public String userLogin(HttpServletRequest request,HttpServletResponse response,</div><div class="line">			String username,String password)&#123;</div><div class="line">		</div><div class="line">		//根据用户名查询数据库.</div><div class="line">		//这里模拟判断密码是否为123.</div><div class="line">		if(!(&quot;123&quot;.equals(password)))</div><div class="line">			return &quot;Error&quot;;</div><div class="line">		</div><div class="line">		//假设User对象从数据库中查询获得.</div><div class="line">		//这里进行模拟.</div><div class="line">		User user=new User();</div><div class="line">		user.setUserid(&quot;1&quot;);</div><div class="line">		user.setUsername(username);</div><div class="line">		user.setPassword(password);</div><div class="line">		</div><div class="line">		//用户名密码正确.</div><div class="line">		//1.生成令牌Token(随机数).</div><div class="line">		String Token=UUID.randomUUID().toString();</div><div class="line">		</div><div class="line">		//2.保存用户信息到redis之前.密码先清空.</div><div class="line">		user.setPassword(null);</div><div class="line">		</div><div class="line">		//3.将用户信息写入redis中.</div><div class="line">		//Key---Token.Value---User(转换为Json)</div><div class="line">		jedisClient.set(Token,JsonUtils.objectToJson(user));</div><div class="line">		</div><div class="line">		//4.设置过期时间.</div><div class="line">		jedisClient.expire(Token,1800);</div><div class="line">		</div><div class="line">		//5.将令牌Token写入到Cookie中.</div><div class="line">		CookieUtils.setCookie(request,response,&quot;T_Token&quot;,Token);</div><div class="line">		</div><div class="line">		return &quot;Success&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="其他模块中的拦截器"><a href="#其他模块中的拦截器" class="headerlink" title="其他模块中的拦截器."></a>其他模块中的拦截器.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">public class LoginInterception implements HandlerInterceptor&#123;</div><div class="line"></div><div class="line">	//Handler执行之前处理.</div><div class="line">	@Override</div><div class="line">	public boolean preHandle(HttpServletRequest request,HttpServletResponse response,Object handler)</div><div class="line">			throws Exception&#123;</div><div class="line">		</div><div class="line">		//1.从Cookie中获取Token.</div><div class="line">		String Token=CookieUtils.getCookieValue(request,&quot;T_Token&quot;);</div><div class="line">		</div><div class="line">		//2.根据Token从redis中查询User信息.</div><div class="line">		//当前拦截器在其他模块中.调用SSO模块使用HttpClient.</div><div class="line">		User user=userService.getUserByToken(Token);</div><div class="line">		</div><div class="line">		//3.判断查询的结果是否为空.</div><div class="line">		if(null==user)&#123;</div><div class="line">			//跳转到登录页面.</div><div class="line">			response.sendRedirect(&quot;&quot;);</div><div class="line">			return false;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		//已经登录.</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//Handler执行之后.返回ModelAndView之前.</div><div class="line">	@Override</div><div class="line">	public void postHandle(HttpServletRequest request,HttpServletResponse response,Object handler,</div><div class="line">			ModelAndView modelAndView)throws Exception&#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//返回ModelAndView之后.</div><div class="line">	@Override</div><div class="line">	public void afterCompletion(HttpServletRequest request,HttpServletResponse response, </div><div class="line">			Object handler,Exception ex)</div><div class="line">			throws Exception&#123;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="其他模块中getTokenByUser-方法"><a href="#其他模块中getTokenByUser-方法" class="headerlink" title="其他模块中getTokenByUser()方法"></a>其他模块中getTokenByUser()方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">//拦截器调用该方法使用HttpClient调用SSO模块方法.</div><div class="line">@Override</div><div class="line">public String getUserByToken(String Token)&#123;</div><div class="line">	</div><div class="line">	try&#123;</div><div class="line">		</div><div class="line">		//接收SSO模块返回的查询信息.</div><div class="line">		String Json=HttpClientUtil.doGet(SSO_URL+Token);</div><div class="line">		</div><div class="line">		//将Json转换为对象后返回.</div><div class="line">		User user=JsonUtils.jsonToPojo(Json,User.class);</div><div class="line">		return user;</div><div class="line">				</div><div class="line">	&#125;catch (Exception e)&#123;</div><div class="line">	&#125;</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="SSO模块中接收Token查询Redis"><a href="#SSO模块中接收Token查询Redis" class="headerlink" title="SSO模块中接收Token查询Redis"></a>SSO模块中接收Token查询Redis</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//拦截器调用该方法使用HttpClient调用SSO模块方法.</div><div class="line">@Override</div><div class="line">public String getUserByToken(String Token)&#123;</div><div class="line">	</div><div class="line">	//根据Token从Redis中查询信息.</div><div class="line">	String json=jedisClient.get(Token);</div><div class="line">	</div><div class="line">	//判断是否为空.</div><div class="line">	if(StringUtils.isBlank(json))</div><div class="line">		return null;</div><div class="line">	</div><div class="line">	//增加过期时间.</div><div class="line">	jedisClient.expire(Token,1800);</div><div class="line">	return json;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
     
 
@@ -435,21 +431,13 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2017/05/10/WebSocket简单示例/" id="post_nav-newer" class="prev-content">
-            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
-                <i class="material-icons">arrow_back</i>
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            新篇
-        </a>
-    
 
     <!-- Section Spacer -->
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
     
-        <a href="/2017/05/04/浅出Java-Nio/" id="post_nav-older" class="next-content">
+        <a href="/2017/05/13/常见算法问题/" id="post_nav-older" class="next-content">
             旧篇
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
