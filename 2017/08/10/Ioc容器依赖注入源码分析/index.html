@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.3.4 -->
+
+    <!-- Title -->
+    
+    <title>
+        
+            Ioc容器依赖注入源码分析 | 
+        
+        游思达的博客
+    </title>
+
+    <!-- Meta & Info -->
+    <meta charset="utf-8">
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    
+    
+    
+    
+    
+    
+
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0097A7">
+    <meta name="author" content="游思达">
+    <meta name="description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    <meta name="keywords" content="null">
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" sizes="192x192" href="/img/favicon.png">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!--iOS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-title" content="Title">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="480">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="游思达的博客">
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="http://yoursite.com">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Ioc容器依赖注入源码分析 | 游思达的博客">
+    <meta property="og:description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import CSS & jQuery -->
+    
+        <link rel="stylesheet" href="/css/material.min.css">
+        <link rel="stylesheet" href="/css/style.min.css">
+        <!-- Config CSS -->
+
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #0097A7 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #0097A7 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #0097A7 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/queue.js"></script>
+    
+
+    <!-- UC Browser Compatible -->
+    <script>
+        var agent = navigator.userAgent.toLowerCase();
+        if(agent.indexOf('ucbrowser')>0) {
+            document.write("<link rel=\"stylesheet\" href=\"/css/uc.css\">");
+            alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+        }
+    </script>
+
+    
+
+    
+
+
+    <!-- Bing Background -->
+    
+
+    <!-- Custom Head -->
+    
+</head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+    <!-- Left aligned menu below button -->
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总述"><span class="post-toc-number">1.</span> <span class="post-toc-text">总述</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#getBean"><span class="post-toc-number">2.</span> <span class="post-toc-text">getBean</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#CreateBean"><span class="post-toc-number">3.</span> <span class="post-toc-text">CreateBean</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#doCreateBean"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">doCreateBean</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#实例化Bean"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">实例化Bean</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#createBeanInstance"><span class="post-toc-number">3.2.1.</span> <span class="post-toc-text">createBeanInstance</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#instantiateBean"><span class="post-toc-number">3.2.2.</span> <span class="post-toc-text">instantiateBean</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#instantiate"><span class="post-toc-number">3.2.3.</span> <span class="post-toc-text">instantiate</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#流程图"><span class="post-toc-number">3.2.4.</span> <span class="post-toc-text">流程图</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#依赖注入"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">依赖注入</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#populateBean"><span class="post-toc-number">3.3.1.</span> <span class="post-toc-text">populateBean</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#applyPropertyValues"><span class="post-toc-number">4.</span> <span class="post-toc-text">applyPropertyValues</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#resolveValueIfNecessay"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">resolveValueIfNecessay</span></a></li></ol></li></ol>
+
+        <!--
+        <li class="mdl-menu__item">
+            Some Action
+        </li>
+        -->
+    </ul>
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script>
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                Ioc容器依赖注入源码分析
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/FaceImage.jpg" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>游思达</strong>
+        <span>8月 10, 2017</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        
+    </ul>
+    
+
+    <!-- Share -->
+    <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Ioc容器依赖注入源码分析&url=http://yoursite.com//2017/08/10/Ioc容器依赖注入源码分析/index.html&pic=&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Ioc容器依赖注入源码分析&url=http://yoursite.com//2017/08/10/Ioc容器依赖注入源码分析/index.html&via=游思达" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/08/10/Ioc容器依赖注入源码分析/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/08/10/Ioc容器依赖注入源码分析/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <h2 id="总述"><a href="#总述" class="headerlink" title="总述"></a>总述</h2><p>依赖注入过程是第一次向<code>IOC</code>容器索要<code>Bean</code>时触发（除<code>Lazy-init</code>属性，在<code>IOC</code>容器初始化完成）。</p>
+<h2 id="getBean"><a href="#getBean" class="headerlink" title="getBean"></a>getBean</h2><p><code>AbstractBeanFactory</code>中<code>getBean</code>实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public Object getBean(String name)throws BeansException&#123;</div><div class="line">	return doGetBean(name,null,null,false);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public &lt;T&gt; T getBean(String name,Class&lt;T&gt; requiredType)throws BeansException&#123;</div><div class="line">	return doGetBean(name,requiredType,null,false);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public Object getBean(String name,Object... args)throws BeansException&#123;</div><div class="line">	return doGetBean(name,null,args,false);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public &lt;T&gt; T getBean(String name,Class&lt;T&gt; requiredType,Object... args)throws BeansException&#123;</div><div class="line">	return doGetBean(name,requiredType,args,false);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终通过<code>doGetBean</code>方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div></pre></td><td class="code"><pre><div class="line">//这里是实际获得Bean的地方.也就是触发依赖注入发生的地方.</div><div class="line">protected &lt;T&gt; T doGetBean(final String name,final Class&lt;T&gt; requiredType,final Object[] args,boolean typeCheckOnly)</div><div class="line">			throws BeansException&#123;</div><div class="line">	final String beanName=transformedBeanName(name);</div><div class="line">	Object bean;</div><div class="line"></div><div class="line">	//先从缓存中获得Bean.处理已经被创建过的单件模式的Bean.</div><div class="line">	//对这种Bean不需要重复创建.</div><div class="line">	Object sharedInstance=getSingleton(beanName);</div><div class="line">	if(sharedInstance != null &amp;&amp; args == null)&#123;</div><div class="line">		if(logger.isDebugEnabled())&#123;</div><div class="line">			if(isSingletonCurrentlyInCreation(beanName))&#123;</div><div class="line">				logger.debug(&quot;Returning eagerly cached instance of singleton bean &apos;&quot;+beanName+</div><div class="line">						&quot;&apos; that is not fully initialized yet - a consequence of a circular reference&quot;);</div><div class="line">			&#125;else&#123;</div><div class="line">				logger.debug(&quot;Returning cached instance of singleton bean &apos;&quot;+beanName+&quot;&apos;&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		//完成FactoryBean的相关处理.以取得Factory的生产结果.后续详细分析.</div><div class="line">		bean=getObjectForBeanInstance(sharedInstance,name,beanName,null);</div><div class="line">	&#125;else&#123;</div><div class="line">		if(isPrototypeCurrentlyInCreation(beanName))&#123;</div><div class="line">			throw new BeanCurrentlyInCreationException(beanName);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		//对Ioc容器中BeanDefinition是否存在进行检查.检查是否在当前的BeanFactory获得需要的Bean.</div><div class="line">		//如果在当前BeanFactory获取不到.则到双亲BeanFacotry中获取.</div><div class="line">		//如果当前双亲工厂获取不到.那么顺着双亲BeanFactory一直向上获取.</div><div class="line">		BeanFactory parentBeanFactory=getParentBeanFactory();</div><div class="line">		if(parentBeanFactory != null &amp;&amp; !containsBeanDefinition(beanName))&#123;</div><div class="line">			//当前BeanFactory中没有Bean.</div><div class="line">			String nameToLookup=originalBeanName(name);</div><div class="line">			if(args != null)&#123;</div><div class="line">				return (T) parentBeanFactory.getBean(nameToLookup,args);</div><div class="line">			&#125;else&#123;</div><div class="line">				return parentBeanFactory.getBean(nameToLookup,requiredType);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		if(!typeCheckOnly)&#123;</div><div class="line">			markBeanAsCreated(beanName);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		try&#123;</div><div class="line">			//根据Bean的名字获得BeanDefinition.</div><div class="line">			final RootBeanDefinition mbd=getMergedLocalBeanDefinition(beanName);</div><div class="line">			checkMergedBeanDefinition(mbd,beanName,args);</div><div class="line"></div><div class="line">			//获取当前Bean依赖的所有Bean.触发getBean的递归调用.直到获取一个没有依赖的Bean为止.</div><div class="line">			String[] dependsOn=mbd.getDependsOn();</div><div class="line">			if(dependsOn != null)&#123;</div><div class="line">				for(String dep:dependsOn)&#123;</div><div class="line">					if(isDependent(beanName,dep))&#123;</div><div class="line">						throw new BeanCreationException(mbd.getResourceDescription(),beanName,</div><div class="line">								&quot;Circular depends-on relationship between &apos;&quot;+beanName+&quot;&apos; and &apos;&quot;+dep+&quot;&apos;&quot;);</div><div class="line">					&#125;</div><div class="line">					registerDependentBean(dep,beanName);</div><div class="line">					getBean(dep);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			//通过调用createBean()方法创建Singletion Bean的实例.</div><div class="line">			if(mbd.isSingleton())&#123;</div><div class="line">				sharedInstance=getSingleton(beanName,new ObjectFactory&lt;Object&gt;()&#123;</div><div class="line">					@Override</div><div class="line">					public Object getObject()throws BeansException&#123;</div><div class="line">						try &#123;</div><div class="line">							return createBean(beanName,mbd,args);</div><div class="line">						&#125;catch(BeansException ex)&#123;</div><div class="line">							destroySingleton(beanName);</div><div class="line">							throw ex;</div><div class="line">						&#125;</div><div class="line">					&#125;</div><div class="line">				&#125;);</div><div class="line">				bean=getObjectForBeanInstance(sharedInstance,name,beanName,mbd);</div><div class="line">			&#125;else if(mbd.isPrototype())&#123;</div><div class="line">				//创建Property Bean.</div><div class="line">				Object prototypeInstance=null;</div><div class="line">				try&#123;</div><div class="line">					beforePrototypeCreation(beanName);</div><div class="line">					prototypeInstance=createBean(beanName,mbd,args);</div><div class="line">				&#125;finally&#123;</div><div class="line">					afterPrototypeCreation(beanName);</div><div class="line">				&#125;</div><div class="line">				bean=getObjectForBeanInstance(prototypeInstance,name,beanName,mbd);</div><div class="line">			&#125;else&#123;</div><div class="line">				//Scope代表Bean的类型.</div><div class="line">				String scopeName=mbd.getScope();</div><div class="line">				final Scope scope=this.scopes.get(scopeName);</div><div class="line">				if(scope == null)&#123;</div><div class="line">					throw new IllegalStateException(&quot;No Scope registered for scope name &apos;&quot;+scopeName+&quot;&apos;&quot;);</div><div class="line">				&#125;</div><div class="line">				try&#123;</div><div class="line">					Object scopedInstance=scope.get(beanName,new ObjectFactory&lt;Object&gt;()&#123;</div><div class="line">						@Override</div><div class="line">						public Object getObject()throws BeansException&#123;</div><div class="line">							beforePrototypeCreation(beanName);</div><div class="line">							try&#123;</div><div class="line">								return createBean(beanName,mbd,args);</div><div class="line">							&#125;finally&#123;</div><div class="line">								afterPrototypeCreation(beanName);</div><div class="line">							&#125;</div><div class="line">						&#125;</div><div class="line">					&#125;);</div><div class="line">					bean=getObjectForBeanInstance(scopedInstance,name,beanName,mbd);</div><div class="line">				&#125;catch(IllegalStateException ex)&#123;</div><div class="line">					throw new BeanCreationException(beanName,</div><div class="line">							&quot;Scope &apos;&quot;+scopeName+&quot;&apos; is not active for the current thread; consider &quot;+</div><div class="line">							&quot;defining a scoped proxy for this bean if you intend to refer to it from a singleton&quot;,</div><div class="line">							ex);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;catch(BeansException ex)&#123;</div><div class="line">			cleanupAfterBeanCreationFailure(beanName);</div><div class="line">			throw ex;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//对创建的Bean进行类型检查.如果没有问题.则返回包含依赖关系的Bean.</div><div class="line">	if(requiredType != null &amp;&amp; bean != null &amp;&amp; !requiredType.isAssignableFrom(bean.getClass()))&#123;</div><div class="line">		try&#123;</div><div class="line">			return getTypeConverter().convertIfNecessary(bean,requiredType);</div><div class="line">		&#125;catch(TypeMismatchException ex)&#123;</div><div class="line">			if(logger.isDebugEnabled())&#123;</div><div class="line">				logger.debug(&quot;Failed to convert bean &apos;&quot;+name+&quot;&apos; to required type &apos;&quot;+</div><div class="line">						ClassUtils.getQualifiedName(requiredType)+&quot;&apos;&quot;,ex);</div><div class="line">			&#125;throw new BeanNotOfRequiredTypeException(name,requiredType,bean.getClass());</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	return (T) bean;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="CreateBean"><a href="#CreateBean" class="headerlink" title="CreateBean"></a>CreateBean</h2><p><code>getBean</code>调用<code>doGetBean</code>，对于未创建单例或其他<code>Bean</code>，调用<code>AbstractAutowireCapableBeanFactory</code>中的<code>createBean</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">protected Object createBean(String beanName,RootBeanDefinition mbd,Object[] args)throws BeanCreationException&#123;</div><div class="line">	if(logger.isDebugEnabled())&#123;</div><div class="line">		logger.debug(&quot;Creating instance of bean&apos;&quot;+beanName+&quot;&apos;&quot;);</div><div class="line">	&#125;</div><div class="line">	RootBeanDefinition mbdToUse=mbd;</div><div class="line">	</div><div class="line">	Class&lt;?&gt; resolvedClass=resolveBeanClass(mbd,beanName);</div><div class="line">	if(resolvedClass != null &amp;&amp; !mbd.hasBeanClass() &amp;&amp; mbd.getBeanClassName() != null)&#123;</div><div class="line">		mbdToUse=new RootBeanDefinition(mbd);</div><div class="line">		mbdToUse.setBeanClass(resolvedClass);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	try&#123;</div><div class="line">		//判断需要创建的Bean是否可以实例化.是否可以通过类加载器载入.</div><div class="line">		mbdToUse.prepareMethodOverrides();</div><div class="line">	&#125;catch(BeanDefinitionValidationException ex)&#123;</div><div class="line">		throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),</div><div class="line">				beanName,&quot;Validation of method overrides failed&quot;,ex);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	try&#123;</div><div class="line">		//如果Bean配置了PostProcessore.那么返回Proxy.</div><div class="line">		Object bean=resolveBeforeInstantiation(beanName,mbdToUse);</div><div class="line">		if(bean != null)&#123;</div><div class="line">			return bean;</div><div class="line">		&#125;</div><div class="line">	&#125;catch(Throwable ex)&#123;</div><div class="line">		throw new BeanCreationException(mbdToUse.getResourceDescription(),beanName,</div><div class="line">				&quot;BeanPostProcessor before instantiation of bean failed&quot;,ex);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//创建Bean的调用.</div><div class="line">	Object beanInstance=doCreateBean(beanName,mbdToUse,args);</div><div class="line">	if(logger.isDebugEnabled())&#123;</div><div class="line">		logger.debug(&quot;Finished creating instance of bean &apos;&quot;+beanName+&quot;&apos;&quot;);</div><div class="line">	&#125;</div><div class="line">	return beanInstance;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="doCreateBean"><a href="#doCreateBean" class="headerlink" title="doCreateBean"></a>doCreateBean</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">protected Object doCreateBean(final String beanName,final RootBeanDefinition mbd,final Object[] args)&#123;</div><div class="line"></div><div class="line">	//BeanWrapper用来持有创建出来的Bean对象.</div><div class="line">	BeanWrapper instanceWrapper=null;</div><div class="line"></div><div class="line">	//如果是单例.先把缓存中同名Bean清除.</div><div class="line">	if(mbd.isSingleton())&#123;</div><div class="line">		instanceWrapper=this.factoryBeanInstanceCache.remove(beanName);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//这里创建Bean.由createBeanInstance完成.</div><div class="line">	if(instanceWrapper == null)&#123;</div><div class="line">		instanceWrapper=createBeanInstance(beanName,mbd,args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	final Object bean=(instanceWrapper != null ? instanceWrapper.getWrappedInstance() : null);</div><div class="line">	Class&lt;?&gt; beanType=(instanceWrapper != null ? instanceWrapper.getWrappedClass() : null);</div><div class="line"></div><div class="line">	//允许后置处理器修改合并的Bean定义.</div><div class="line">	synchronized(mbd.postProcessingLock)&#123;</div><div class="line">		if(!mbd.postProcessed)&#123;</div><div class="line">			applyMergedBeanDefinitionPostProcessors(mbd,beanType,beanName);</div><div class="line">			mbd.postProcessed=true;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	boolean earlySingletonExposure=(mbd.isSingleton() &amp;&amp; this.allowCircularReferences &amp;&amp;</div><div class="line">			isSingletonCurrentlyInCreation(beanName));</div><div class="line">	if(earlySingletonExposure)&#123;</div><div class="line">		if(logger.isDebugEnabled())&#123;</div><div class="line">			logger.debug(&quot;Eagerly caching bean &apos;&quot;+beanName+</div><div class="line">					&quot;&apos;to allow for resolving potential circular references&quot;);</div><div class="line">		&#125;</div><div class="line">		addSingletonFactory(beanName,new ObjectFactory&lt;Object&gt;()&#123;</div><div class="line">			@Override</div><div class="line">			public Object getObject()throws BeansException&#123;</div><div class="line">				return getEarlyBeanReference(beanName,mbd,bean);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//初始化Bean.依赖注入在此发生.</div><div class="line">	Object exposedObject=bean;</div><div class="line">	try&#123;</div><div class="line">		populateBean(beanName,mbd,instanceWrapper);</div><div class="line">		if(exposedObject != null)&#123;</div><div class="line">			exposedObject=initializeBean(beanName,exposedObject,mbd);</div><div class="line">		&#125;</div><div class="line">	&#125;catch(Throwable ex)&#123;</div><div class="line">		if(ex instanceof BeanCreationException &amp;&amp; beanName.equals(((BeanCreationException)ex).getBeanName()))&#123;</div><div class="line">			throw (BeanCreationException) ex;</div><div class="line">		&#125;else&#123;</div><div class="line">			throw new BeanCreationException(mbd.getResourceDescription(),beanName,&quot;Initialization of bean failed&quot;,ex);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//...</div><div class="line">	</div><div class="line">	try&#123;</div><div class="line">		registerDisposableBeanIfNecessary(beanName,bean,mbd);</div><div class="line">	&#125;catch(BeanDefinitionValidationException ex)&#123;</div><div class="line">		throw new BeanCreationException(mbd.getResourceDescription(),beanName,&quot;Invalid destruction signature&quot;,ex);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	return exposedObject;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>与依赖注入关系密切的有<code>createBeanInstance</code>后<code>populateBean</code>。</p>
+<h3 id="实例化Bean"><a href="#实例化Bean" class="headerlink" title="实例化Bean"></a>实例化Bean</h3><h4 id="createBeanInstance"><a href="#createBeanInstance" class="headerlink" title="createBeanInstance"></a>createBeanInstance</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">protected BeanWrapper createBeanInstance(String beanName,RootBeanDefinition mbd,Object[] args)&#123;</div><div class="line">	//确认需要创建的Bean实例的类可以实例化.</div><div class="line">	Class&lt;?&gt; beanClass=resolveBeanClass(mbd,beanName);</div><div class="line">	if(beanClass != null &amp;&amp; !Modifier.isPublic(beanClass.getModifiers()) &amp;&amp; !mbd.isNonPublicAccessAllowed())&#123;</div><div class="line">		throw new BeanCreationException(mbd.getResourceDescription(),beanName,</div><div class="line">				&quot;Bean class isn&apos;t public, and non-public access not allowed: &quot;+beanClass.getName());</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//使用工厂方法对Bean初始化.</div><div class="line">	if(mbd.getFactoryMethodName() != null)&#123;</div><div class="line">		return instantiateUsingFactoryMethod(beanName,mbd,args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//相同的Bean快速创建.</div><div class="line">	boolean resolved=false;</div><div class="line">	boolean autowireNecessary=false;</div><div class="line">	if(args == null)&#123;</div><div class="line">		synchronized(mbd.constructorArgumentLock)&#123;</div><div class="line">			if(mbd.resolvedConstructorOrFactoryMethod != null)&#123;</div><div class="line">				resolved=true;</div><div class="line">				autowireNecessary=mbd.constructorArgumentsResolved;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	if(resolved)&#123;</div><div class="line">		if(autowireNecessary)&#123;</div><div class="line">			return autowireConstructor(beanName,mbd,null,null);</div><div class="line">		&#125;else&#123;</div><div class="line">			return instantiateBean(beanName,mbd);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//使用构造函数初始化.</div><div class="line">	Constructor&lt;?&gt;[] ctors=determineConstructorsFromBeanPostProcessors(beanClass,beanName);</div><div class="line">	if(ctors != null ||</div><div class="line">			mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_CONSTRUCTOR ||</div><div class="line">			mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args))&#123;</div><div class="line">		return autowireConstructor(beanName,mbd,ctors,args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//使用默认构造函数初始化.</div><div class="line">	return instantiateBean(beanName,mbd);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用默认实例化策略对<code>Bean</code>进行实例化，即使用<code>CGLIB</code>。</p>
+<h4 id="instantiateBean"><a href="#instantiateBean" class="headerlink" title="instantiateBean"></a>instantiateBean</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">protected BeanWrapper instantiateBean(final String beanName,final RootBeanDefinition mbd)&#123;</div><div class="line">	try&#123;</div><div class="line">		Object beanInstance;</div><div class="line">		final BeanFactory parent=this;</div><div class="line">		if(System.getSecurityManager() != null)&#123;</div><div class="line">			beanInstance=AccessController.doPrivileged(new PrivilegedAction&lt;Object&gt;()&#123;</div><div class="line">				@Override</div><div class="line">				public Object run()&#123;</div><div class="line">					return getInstantiationStrategy().instantiate(mbd,beanName,parent);</div><div class="line">				&#125;</div><div class="line">			&#125;,getAccessControlContext());</div><div class="line">		&#125;else&#123;</div><div class="line">			beanInstance=getInstantiationStrategy().instantiate(mbd,beanName,parent);</div><div class="line">		&#125;</div><div class="line">		BeanWrapper bw=new BeanWrapperImpl(beanInstance);</div><div class="line">		initBeanWrapper(bw);</div><div class="line">		return bw;</div><div class="line">	&#125;catch(Throwable ex)&#123;</div><div class="line">		throw new BeanCreationException(mbd.getResourceDescription(),beanName,&quot;Instantiation of bean failed&quot;,ex);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用<code>CGLIB</code>对<code>Bean</code>进行实例化。</p>
+<h4 id="instantiate"><a href="#instantiate" class="headerlink" title="instantiate"></a>instantiate</h4><p>要了解怎样使用<code>CGLIB</code>生成<code>Bean</code>对象，需要看<code>SimpleInstantiationStrategy</code>类，此类是<code>Spring</code>生成<code>Bean</code>对象默认类。</p>
+<ul>
+<li>使用<code>BeanUtils</code>（<code>JVM</code>反射）</li>
+<li>使用<code>CGLIB</code>生成</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">public Object instantiate(RootBeanDefinition bd,String beanName,BeanFactory owner)&#123;</div><div class="line">	if(bd.getMethodOverrides().isEmpty())&#123;</div><div class="line">		Constructor&lt;?&gt; constructorToUse;</div><div class="line">		synchronized(bd.constructorArgumentLock)&#123;</div><div class="line">			//获得Bean的构造器.</div><div class="line">			constructorToUse=(Constructor&lt;?&gt;)bd.resolvedConstructorOrFactoryMethod;</div><div class="line"></div><div class="line">			if(constructorToUse == null)&#123;</div><div class="line">				//获得Bean的Class对象.</div><div class="line">				//以下会获得Bean的默认构造器.</div><div class="line">				final Class&lt;?&gt; clazz=bd.getBeanClass();</div><div class="line">				if(clazz.isInterface())&#123;</div><div class="line">					throw new BeanInstantiationException(clazz,&quot;Specified class is an interface&quot;);</div><div class="line">				&#125;</div><div class="line">				try&#123;</div><div class="line">					if(System.getSecurityManager() != null)&#123;</div><div class="line">						constructorToUse=AccessController.doPrivileged(new PrivilegedExceptionAction&lt;Constructor&lt;?&gt;&gt;()&#123;</div><div class="line">							@Override</div><div class="line">							public Constructor&lt;?&gt; run()throws Exception&#123;</div><div class="line">								return clazz.getDeclaredConstructor((Class[]) null);</div><div class="line">							&#125;</div><div class="line">						&#125;);</div><div class="line">					&#125;else&#123;</div><div class="line">						constructorToUse=clazz.getDeclaredConstructor((Class[]) null);</div><div class="line">					&#125;</div><div class="line">					bd.resolvedConstructorOrFactoryMethod=constructorToUse;</div><div class="line">				&#125;catch(Exception ex)&#123;</div><div class="line">					throw new BeanInstantiationException(clazz,&quot;No default constructor found&quot;,ex);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		//使用BeanUtils.JVM反射.</div><div class="line">		return BeanUtils.instantiateClass(constructorToUse);</div><div class="line">	&#125;else&#123;</div><div class="line">		//使用CGLIB来实例化对象.</div><div class="line">		return instantiateWithMethodInjection(bd,beanName,owner);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在<code>cglibSubclassingInstantiationStrategy</code>中可以看到实现过程。</p>
+<h4 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h4><p><img src="\img\实习\25.png" alt="image"></p>
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><h4 id="populateBean"><a href="#populateBean" class="headerlink" title="populateBean"></a>populateBean</h4><p>以上已经分析实例化<code>Bean</code>的全部过程，下面介绍依赖注入，涉及<code>Bean</code>对象属性处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">protected void populateBean(String beanName,RootBeanDefinition mbd,BeanWrapper bw)&#123;</div><div class="line"></div><div class="line">	//获得在BeanDefinition中设置的property.这些property来自对BeanDefinition的解析.</div><div class="line">	PropertyValues pvs=mbd.getPropertyValues();</div><div class="line"></div><div class="line">	if(bw == null)&#123;</div><div class="line">		if(!pvs.isEmpty())&#123;</div><div class="line">			throw new BeanCreationException(</div><div class="line">					mbd.getResourceDescription(),beanName,&quot;Cannot apply property values to null instance&quot;);</div><div class="line">		&#125;else&#123;</div><div class="line">			return;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	boolean continueWithPropertyPopulation=true;</div><div class="line"></div><div class="line">	if(!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors())&#123;</div><div class="line">		for(BeanPostProcessor bp : getBeanPostProcessors())&#123;</div><div class="line">			if(bp instanceof InstantiationAwareBeanPostProcessor)&#123;</div><div class="line">				InstantiationAwareBeanPostProcessor ibp=(InstantiationAwareBeanPostProcessor)bp;</div><div class="line">				if(!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(),beanName))&#123;</div><div class="line">					continueWithPropertyPopulation=false;</div><div class="line">					break;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	if(!continueWithPropertyPopulation)&#123;</div><div class="line">		return;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//开始进行依赖注入过程.先处理Autowire注入.</div><div class="line">	if(mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_BY_NAME ||</div><div class="line">			mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_BY_TYPE)&#123;</div><div class="line">		MutablePropertyValues newPvs=new MutablePropertyValues(pvs);</div><div class="line"></div><div class="line">		//对Autowired的注入进行处理.可以根据Bean的名字或类型完成注入.</div><div class="line">		if(mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_BY_NAME)&#123;</div><div class="line">			autowireByName(beanName,mbd,bw,newPvs);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		if(mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_BY_TYPE)&#123;</div><div class="line">			autowireByType(beanName,mbd,bw,newPvs);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		pvs=newPvs;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	boolean hasInstAwareBpps=hasInstantiationAwareBeanPostProcessors();</div><div class="line">	boolean needsDepCheck=(mbd.getDependencyCheck() != RootBeanDefinition.DEPENDENCY_CHECK_NONE);</div><div class="line"></div><div class="line">	if(hasInstAwareBpps || needsDepCheck)&#123;</div><div class="line">		PropertyDescriptor[] filteredPds=filterPropertyDescriptorsForDependencyCheck(bw,mbd.allowCaching);</div><div class="line">		if(hasInstAwareBpps)&#123;</div><div class="line">			for(BeanPostProcessor bp : getBeanPostProcessors())&#123;</div><div class="line">				if(bp instanceof InstantiationAwareBeanPostProcessor)&#123;</div><div class="line">					InstantiationAwareBeanPostProcessor ibp=(InstantiationAwareBeanPostProcessor)bp;</div><div class="line">					pvs=ibp.postProcessPropertyValues(pvs,filteredPds,bw.getWrappedInstance(),beanName);</div><div class="line">					if(pvs == null)&#123;</div><div class="line">						return;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		if(needsDepCheck)&#123;</div><div class="line">			checkDependencies(beanName,mbd,filteredPds,pvs);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//属性注入.</div><div class="line">	applyPropertyValues(beanName,mbd,bw,pvs);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="applyPropertyValues"><a href="#applyPropertyValues" class="headerlink" title="applyPropertyValues"></a>applyPropertyValues</h2><p>通过<code>applyPropertyValues</code>了解对属性进行解析然后注入的过程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line">protected void applyPropertyValues(String beanName,BeanDefinition mbd,BeanWrapper bw,PropertyValues pvs)&#123;</div><div class="line">	if(pvs == null || pvs.isEmpty())&#123;</div><div class="line">		return;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	MutablePropertyValues mpvs=null;</div><div class="line">	List&lt;PropertyValue&gt; original;</div><div class="line"></div><div class="line">	if(System.getSecurityManager() != null)&#123;</div><div class="line">		if(bw instanceof BeanWrapperImpl)&#123;</div><div class="line">			((BeanWrapperImpl)bw).setSecurityContext(getAccessControlContext());</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	if(pvs instanceof MutablePropertyValues)&#123;</div><div class="line">		mpvs=(MutablePropertyValues)pvs;</div><div class="line">		if(mpvs.isConverted())&#123;</div><div class="line">			try&#123;</div><div class="line">				bw.setPropertyValues(mpvs);</div><div class="line">				return;</div><div class="line">			&#125;catch(BeansException ex)&#123;</div><div class="line">				throw new BeanCreationException(</div><div class="line">						mbd.getResourceDescription(),beanName,&quot;Error setting property values&quot;,ex);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		original=mpvs.getPropertyValueList();</div><div class="line">	&#125;else&#123;</div><div class="line">		original=Arrays.asList(pvs.getPropertyValues());</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	TypeConverter converter=getCustomTypeConverter();</div><div class="line">	if(converter == null)&#123;</div><div class="line">		converter=bw;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	BeanDefinitionValueResolver valueResolver=new BeanDefinitionValueResolver(this,beanName,mbd,converter);</div><div class="line"></div><div class="line">	//为解析值创建一个副本.副本的数据会注入进Bean中.</div><div class="line">	List&lt;PropertyValue&gt; deepCopy=new ArrayList&lt;PropertyValue&gt;(original.size());</div><div class="line">	boolean resolveNecessary=false;</div><div class="line"></div><div class="line">	for(PropertyValue pv:original)&#123;</div><div class="line">		if(pv.isConverted())&#123;</div><div class="line">			deepCopy.add(pv);</div><div class="line">		&#125;else&#123;</div><div class="line">			String propertyName=pv.getName();</div><div class="line">			Object originalValue=pv.getValue();</div><div class="line">			Object resolvedValue=valueResolver.resolveValueIfNecessary(pv,originalValue);</div><div class="line">			Object convertedValue=resolvedValue;</div><div class="line"></div><div class="line">			boolean convertible=bw.isWritableProperty(propertyName) &amp;&amp;</div><div class="line">					!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);</div><div class="line">			if(convertible)&#123;</div><div class="line">				convertedValue=convertForProperty(resolvedValue,propertyName,bw,converter);</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			if(resolvedValue == originalValue)&#123;</div><div class="line">				if(convertible)&#123;</div><div class="line">					pv.setConvertedValue(convertedValue);</div><div class="line">				&#125;</div><div class="line">				deepCopy.add(pv);</div><div class="line">			&#125;else if(convertible &amp;&amp; originalValue instanceof TypedStringValue &amp;&amp;</div><div class="line">					!((TypedStringValue)originalValue).isDynamic() &amp;&amp;</div><div class="line">					!(convertedValue instanceof Collection || ObjectUtils.isArray(convertedValue)))&#123;</div><div class="line">				pv.setConvertedValue(convertedValue);</div><div class="line">				deepCopy.add(pv);</div><div class="line">			&#125;else&#123;</div><div class="line">				resolveNecessary=true;</div><div class="line">				deepCopy.add(new PropertyValue(pv,convertedValue));</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	if(mpvs != null &amp;&amp; !resolveNecessary)&#123;</div><div class="line">		mpvs.setConverted();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//依赖注入发生的地方.在BeanWrapperImpl中完成.</div><div class="line">	try&#123;</div><div class="line">		bw.setPropertyValues(new MutablePropertyValues(deepCopy));</div><div class="line">	&#125;catch(BeansException ex)&#123;</div><div class="line">		throw new BeanCreationException(</div><div class="line">				mbd.getResourceDescription(),beanName,&quot;Error setting property values&quot;,ex);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="resolveValueIfNecessay"><a href="#resolveValueIfNecessay" class="headerlink" title="resolveValueIfNecessay"></a>resolveValueIfNecessay</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line">public Object resolveValueIfNecessary(Object argName,Object value)&#123;</div><div class="line"></div><div class="line">	//对RuntimeBeanReference进行解析.</div><div class="line">	if(value instanceof RuntimeBeanReference)&#123;</div><div class="line">		RuntimeBeanReference ref=(RuntimeBeanReference)value;</div><div class="line">		return resolveReference(argName,ref);</div><div class="line">	&#125;</div><div class="line">	else if(value instanceof RuntimeBeanNameReference)&#123;</div><div class="line">		String refName=((RuntimeBeanNameReference)value).getBeanName();</div><div class="line">		refName=String.valueOf(doEvaluate(refName));</div><div class="line"></div><div class="line">		if(!this.beanFactory.containsBean(refName))&#123;</div><div class="line">			throw new BeanDefinitionStoreException(</div><div class="line">					&quot;Invalid bean name&apos;&quot;+refName+&quot;&apos;in bean reference for&quot;+argName);</div><div class="line">		&#125;</div><div class="line">		return refName;</div><div class="line">	&#125;</div><div class="line">	else if(value instanceof BeanDefinitionHolder)&#123;</div><div class="line">		BeanDefinitionHolder bdHolder=(BeanDefinitionHolder)value;</div><div class="line">		return resolveInnerBean(argName,bdHolder.getBeanName(),bdHolder.getBeanDefinition());</div><div class="line">	&#125;</div><div class="line">	else if(value instanceof BeanDefinition)&#123;</div><div class="line">		BeanDefinition bd=(BeanDefinition)value;</div><div class="line">		String innerBeanName=&quot;(inner bean)&quot;+BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR+</div><div class="line">				ObjectUtils.getIdentityHexString(bd);</div><div class="line">		return resolveInnerBean(argName,innerBeanName,bd);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//对ManagedArray进行解析.</div><div class="line">	else if(value instanceof ManagedArray)&#123;</div><div class="line">		ManagedArray array=(ManagedArray)value;</div><div class="line">		Class&lt;?&gt; elementType=array.resolvedElementType;</div><div class="line">		if (elementType == null) &#123;</div><div class="line">			String elementTypeName=array.getElementTypeName();</div><div class="line">			if(StringUtils.hasText(elementTypeName))&#123;</div><div class="line">				try&#123;</div><div class="line">					elementType=ClassUtils.forName(elementTypeName,this.beanFactory.getBeanClassLoader());</div><div class="line">					array.resolvedElementType=elementType;</div><div class="line">				&#125;catch(Throwable ex)&#123;</div><div class="line">					throw new BeanCreationException(</div><div class="line">							this.beanDefinition.getResourceDescription(),this.beanName,</div><div class="line">							&quot;Error resolving array type for&quot;+ argName,ex);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			else&#123;</div><div class="line">				elementType=Object.class;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		return resolveManagedArray(argName,(List&lt;?&gt;)value,elementType);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//对ManagedList进行解析.</div><div class="line">	else if(value instanceof ManagedList)&#123;</div><div class="line">		return resolveManagedList(argName,(List&lt;?&gt;)value);</div><div class="line">	&#125;</div><div class="line">	//对ManagedSet进行解析.</div><div class="line">	else if(value instanceof ManagedSet)&#123;</div><div class="line">		return resolveManagedSet(argName,(Set&lt;?&gt;)value);</div><div class="line">	&#125;</div><div class="line">	//对ManagedMap进行解析.</div><div class="line">	else if(value instanceof ManagedMap)&#123;</div><div class="line">		return resolveManagedMap(argName,(Map&lt;?,?&gt;)value);</div><div class="line">	&#125;</div><div class="line">	//对ManagedProperties进行解析.</div><div class="line">	else if(value instanceof ManagedProperties)&#123;</div><div class="line">		Properties original=(Properties)value;</div><div class="line">		Properties copy=new Properties();</div><div class="line"></div><div class="line">		for(Map.Entry&lt;Object,Object&gt; propEntry : original.entrySet())&#123;</div><div class="line">			Object propKey=propEntry.getKey();</div><div class="line">			Object propValue=propEntry.getValue();</div><div class="line">			if(propKey instanceof TypedStringValue)&#123;</div><div class="line">				propKey=evaluate((TypedStringValue)propKey);</div><div class="line">			&#125;</div><div class="line">			if(propValue instanceof TypedStringValue)&#123;</div><div class="line">				propValue=evaluate((TypedStringValue)propValue);</div><div class="line">			&#125;</div><div class="line">			copy.put(propKey,propValue);</div><div class="line">		&#125;</div><div class="line">		return copy;</div><div class="line">	&#125;</div><div class="line">	else if(value instanceof TypedStringValue)&#123;</div><div class="line">		TypedStringValue typedStringValue=(TypedStringValue)value;</div><div class="line">		Object valueObject=evaluate(typedStringValue);</div><div class="line">		try&#123;</div><div class="line">			Class&lt;?&gt; resolvedTargetType=resolveTargetType(typedStringValue);</div><div class="line">			if(resolvedTargetType != null)&#123;</div><div class="line">				return this.typeConverter.convertIfNecessary(valueObject,resolvedTargetType);</div><div class="line">			&#125;</div><div class="line">			else&#123;</div><div class="line">				return valueObject;</div><div class="line">			&#125;</div><div class="line">		&#125;catch(Throwable ex)&#123;</div><div class="line">			throw new BeanCreationException(</div><div class="line">					this.beanDefinition.getResourceDescription(),this.beanName,</div><div class="line">					&quot;Error converting typed String value for&quot;+argName,ex);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	else&#123;</div><div class="line">		return evaluate(value);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>完成解析过程后，为依赖注入准备了条件，依赖注入在<code>BeanWrapper</code>中<code>setPropertyValues</code>完成。</p>
+<p><img src="\img\实习\26.png" alt="image"></p>
+
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+
+
+
+
+
+
+
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2017/08/15/Spring Aop源码分析/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2017/08/01/Ioc容器初始化源码分析/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/SideImage.jpg);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/FaceImage.jpg" alt="游思达's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        553408524@qq.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/" target="_self">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2017/08/">八月 2017<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/07/">七月 2017<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/06/">六月 2017<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/04/">四月 2017<span class="sidebar_archives-count">4</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/Git/">Git<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java-基础/">Java 基础<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java基础/">Java基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/分布式/">分布式<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/数据结构/">数据结构<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/杂七杂八/">杂七杂八<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/框架/">框架<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">5</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+
+    <!-- Article Number  -->
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+    <a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+        <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+            主题 - Material
+            <span class="sidebar-badge badge-circle">i</span>
+        </div>
+    </a>
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/yousida" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-github.svg);">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+        <a href="https://www.zhihu.com/people/you-si-da" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-zhihu.svg);">
+                <span class="visuallyhidden">Zhihu</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©&nbsp;
+            <script type="text/javascript">
+                var fd = new Date();
+                document.write(fd.getFullYear());
+            </script>
+            &nbsp;游思达的博客
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import File -->
+
+    <script src="/js/lazyload.min.js"></script>
+    <script src="/js/js.min.js"></script>
+
+
+
+    <script src="/js/nprogress.js"></script>
+
+
+<script type="text/javascript">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Window Load-->
+<script>
+    $(window).load(function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+</script>
+
+<!-- MathJax Load-->
+
+<script>
+    <!-- Offer LazyLoad -->
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    <!-- Start Queue -->
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>

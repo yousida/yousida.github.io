@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.3.4 -->
+
+    <!-- Title -->
+    
+    <title>
+        
+            Ioc容器初始化源码分析 | 
+        
+        游思达的博客
+    </title>
+
+    <!-- Meta & Info -->
+    <meta charset="utf-8">
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    
+    
+    
+    
+    
+    
+
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0097A7">
+    <meta name="author" content="游思达">
+    <meta name="description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    <meta name="keywords" content="null">
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" sizes="192x192" href="/img/favicon.png">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!--iOS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-title" content="Title">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="480">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="游思达的博客">
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="http://yoursite.com">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Ioc容器初始化源码分析 | 游思达的博客">
+    <meta property="og:description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import CSS & jQuery -->
+    
+        <link rel="stylesheet" href="/css/material.min.css">
+        <link rel="stylesheet" href="/css/style.min.css">
+        <!-- Config CSS -->
+
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #0097A7 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #0097A7 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #0097A7 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/queue.js"></script>
+    
+
+    <!-- UC Browser Compatible -->
+    <script>
+        var agent = navigator.userAgent.toLowerCase();
+        if(agent.indexOf('ucbrowser')>0) {
+            document.write("<link rel=\"stylesheet\" href=\"/css/uc.css\">");
+            alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+        }
+    </script>
+
+    
+
+    
+
+
+    <!-- Bing Background -->
+    
+
+    <!-- Custom Head -->
+    
+</head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+    <!-- Left aligned menu below button -->
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#结构图"><span class="post-toc-number">1.</span> <span class="post-toc-text">结构图</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基本功能实现"><span class="post-toc-number">2.</span> <span class="post-toc-text">基本功能实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#BeanFactory"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">BeanFactory</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#XmlBeanFactory"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">XmlBeanFactory</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#源码"><span class="post-toc-number">2.1.1.1.</span> <span class="post-toc-text">源码</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#使用DefaultListableBeanFactory"><span class="post-toc-number">2.1.1.2.</span> <span class="post-toc-text">使用DefaultListableBeanFactory</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#ResourceLoader"><span class="post-toc-number">2.1.1.3.</span> <span class="post-toc-text">ResourceLoader</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ApplicationContext"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">ApplicationContext</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#FileSystemXmlApplicationContext"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">FileSystemXmlApplicationContext</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#源码-1"><span class="post-toc-number">2.2.1.1.</span> <span class="post-toc-text">源码</span></a></li></ol></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Ioc容器初始化"><span class="post-toc-number">3.</span> <span class="post-toc-text">Ioc容器初始化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Resource定位"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">Resource定位</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#载入"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">载入</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Refresh"><span class="post-toc-number">3.2.1.</span> <span class="post-toc-text">Refresh</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#创建容器"><span class="post-toc-number">3.2.2.</span> <span class="post-toc-text">创建容器</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#loadBeanDefintions"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">loadBeanDefintions</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#AbstractXmlApplication类"><span class="post-toc-number">3.3.1.</span> <span class="post-toc-text">AbstractXmlApplication类</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#XmlBeanDefinitionReader类"><span class="post-toc-number">3.3.2.</span> <span class="post-toc-text">XmlBeanDefinitionReader类</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#AbstractBeanDefintionReader类"><span class="post-toc-number">3.3.3.</span> <span class="post-toc-text">AbstractBeanDefintionReader类</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#XmlBeanDefinitions类"><span class="post-toc-number">3.3.4.</span> <span class="post-toc-text">XmlBeanDefinitions类</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#XmlBeanDefinitionReader"><span class="post-toc-number">3.3.5.</span> <span class="post-toc-text">XmlBeanDefinitionReader</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#XmlBeanDefintionReader"><span class="post-toc-number">3.3.6.</span> <span class="post-toc-text">XmlBeanDefintionReader</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#DefaultBeanDefinitionDocument"><span class="post-toc-number">3.3.7.</span> <span class="post-toc-text">DefaultBeanDefinitionDocument</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#BeanDefinitionParserDelegate"><span class="post-toc-number">3.3.8.</span> <span class="post-toc-text">BeanDefinitionParserDelegate</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解析BeanDefinition"><span class="post-toc-number">3.3.9.</span> <span class="post-toc-text">解析BeanDefinition</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解析Property"><span class="post-toc-number">3.3.10.</span> <span class="post-toc-text">解析Property</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#子元素解析"><span class="post-toc-number">3.3.11.</span> <span class="post-toc-text">子元素解析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#总结"><span class="post-toc-number">3.3.12.</span> <span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#注册"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">注册</span></a></li></ol></li></ol>
+
+        <!--
+        <li class="mdl-menu__item">
+            Some Action
+        </li>
+        -->
+    </ul>
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script>
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                Ioc容器初始化源码分析
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/FaceImage.jpg" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>游思达</strong>
+        <span>8月 01, 2017</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        
+    </ul>
+    
+
+    <!-- Share -->
+    <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Ioc容器初始化源码分析&url=http://yoursite.com//2017/08/01/Ioc容器初始化源码分析/index.html&pic=&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Ioc容器初始化源码分析&url=http://yoursite.com//2017/08/01/Ioc容器初始化源码分析/index.html&via=游思达" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/08/01/Ioc容器初始化源码分析/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/08/01/Ioc容器初始化源码分析/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p><code>IOC</code>容器实现</p>
+<ul>
+<li>实现<code>BeanFactory</code>接口，包含<code>IOC</code>容器基本功能。</li>
+<li>实现<code>Application</code>接口，包含<code>IOC</code>容器高级功能。</li>
+</ul>
+<p><img src="\img\实习\16.png" alt="image"></p>
+<h2 id="基本功能实现"><a href="#基本功能实现" class="headerlink" title="基本功能实现"></a>基本功能实现</h2><h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><code>BeanFactory</code>包含<code>IOC</code>容器基本功能，<code>IOC</code>容器需要实现此接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public interface BeanFactory&#123;</div><div class="line">	</div><div class="line">	String FACTORY_BEAN_PREFIX=&quot;&amp;&quot;;</div><div class="line"></div><div class="line">	//通过name获取Bean.返回Object类型.</div><div class="line">	Object getBean(String name)throws BeansException;</div><div class="line">	</div><div class="line">	//通过类型获取Bean.返回指定类型.</div><div class="line">	&lt;T&gt; T getBean(Class&lt;T&gt; requiredType)throws BeansException;</div><div class="line"></div><div class="line">	//通过name和类型获取Bean.返回指定类型.</div><div class="line">	&lt;T&gt; T getBean(String name,Class&lt;T&gt; requiredType)throws BeansException;</div><div class="line"></div><div class="line">	//通过name和显示声明的参数获取Bean.返回Object类型.显示声明参数用于原型.</div><div class="line">	Object getBean(String name,Object... args)throws BeansException;</div><div class="line"></div><div class="line">	//判断Ioc容器中是否有指定Bean.</div><div class="line">	boolean containsBean(String name);</div><div class="line">	</div><div class="line">	//判断Ioc容器中指定Bean是否为特定类型.</div><div class="line">	boolean isTypeMatch(String name,Class&lt;?&gt; targetType)throws NoSuchBeanDefinitionException;</div><div class="line"></div><div class="line">	//判断Ioc容器中指定Bean是否为单例.</div><div class="line">	boolean isSingleton(String name)throws NoSuchBeanDefinitionException;</div><div class="line"></div><div class="line">	//判断Ioc容器中指定Bean是否为原型.</div><div class="line">	boolean isPrototype(String name)throws NoSuchBeanDefinitionException;</div><div class="line"></div><div class="line">	//通过name查询Class类型.</div><div class="line">	Class&lt;?&gt; getType(String name)throws NoSuchBeanDefinitionException;</div><div class="line"></div><div class="line">	//通过name查询别名.</div><div class="line">	String[] getAliases(String name);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>DefaultListableBeanFactory</code>实现<code>BeanFactory</code>接口，作为最基本<code>IOC</code>容器。</p>
+<h4 id="XmlBeanFactory"><a href="#XmlBeanFactory" class="headerlink" title="XmlBeanFactory"></a>XmlBeanFactory</h4><h5 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//DefaultListableBeanFactory实现Ioc容器基本功能.</div><div class="line">public class XmlBeanFactory extends DefaultListableBeanFactory&#123;</div><div class="line">	//对Xml信息处理实际由XmlBeanDefinitionReader完成.</div><div class="line">	private final XmlBeanDefinitionReader reader=new XmlBeanDefinitionReader(this);</div><div class="line"></div><div class="line">	//初始化Ioc容器时.需要指定BeanDefinition来源.该信息封装为Resource(Spring封装IO操作类).</div><div class="line">	public XmlBeanFactory(Resource resource)throws BeansException&#123;</div><div class="line">		this(resource,null);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public XmlBeanFactory(Resource resource,BeanFactory parentBeanFactory)throws BeansException&#123;</div><div class="line">		super(parentBeanFactory);</div><div class="line">		this.reader.loadBeanDefinitions(resource);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用<code>ClassPathResource res=new ClassPathResource(&quot;beans.xml&quot;)</code>构造<code>Resource</code>，将<code>Resource</code>作为构造参数传入<code>XmlBeanFactory</code>构造函数中。</p>
+<h5 id="使用DefaultListableBeanFactory"><a href="#使用DefaultListableBeanFactory" class="headerlink" title="使用DefaultListableBeanFactory"></a>使用DefaultListableBeanFactory</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class MainTest&#123;</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        //1.创建Ioc容器Resource配置文件.</div><div class="line">        ClassPathResource res=new ClassPathResource(&quot;myBeans.xml&quot;);</div><div class="line"></div><div class="line">        //2.创建基本Ioc容器.</div><div class="line">        DefaultListableBeanFactory factory=new DefaultListableBeanFactory();</div><div class="line"></div><div class="line">        //3.创建BeanDefinition的读取器.</div><div class="line">        XmlBeanDefinitionReader reader=new XmlBeanDefinitionReader(factory);</div><div class="line"></div><div class="line">        //4.读取配置信息.</div><div class="line">        reader.loadBeanDefinitions(res);</div><div class="line"></div><div class="line">        Person p=(Person)factory.getBean(&quot;Person&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="ResourceLoader"><a href="#ResourceLoader" class="headerlink" title="ResourceLoader"></a>ResourceLoader</h5><p><code>ResourceLoader</code>返回<code>Resource</code>对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public interface ResourceLoader&#123;</div><div class="line">	String CLASSPATH_URL_PREFIX=ResourceUtils.CLASSPATH_URL_PREFIX;</div><div class="line"></div><div class="line">	Resource getResource(String location);</div><div class="line">	ClassLoader getClassLoader();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h3><p>分析<code>FileSystemXmlApplicationContext</code></p>
+<h4 id="FileSystemXmlApplicationContext"><a href="#FileSystemXmlApplicationContext" class="headerlink" title="FileSystemXmlApplicationContext"></a>FileSystemXmlApplicationContext</h4><p>主要功能在<code>AbstractXmlApplicationContext</code>中实现，<code>FileSystemXmlApplicationContext</code>需实现：</p>
+<ul>
+<li>直接使用<code>FileSystemXmlApplicationContext</code>支持。</li>
+<li>读取<code>BeanDefintion</code>方式。</li>
+</ul>
+<h5 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h5><p>最终调用的构造函数指定文件路径（可多个）、是否初始化和双亲容器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">public class FileSystemXmlApplicationContext extends AbstractXmlApplicationContext&#123;</div><div class="line">	public FileSystemXmlApplicationContext()&#123;&#125;</div><div class="line"></div><div class="line">	public FileSystemXmlApplicationContext(ApplicationContext parent)&#123;</div><div class="line">		super(parent);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//configLocation:文件的路径.</div><div class="line">	public FileSystemXmlApplicationContext(String configLocation)throws BeansException&#123;</div><div class="line">		this(new String[] &#123;configLocation&#125;,true,null);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//configLocations:多个文件路径.</div><div class="line">	public FileSystemXmlApplicationContext(String... configLocations)throws BeansException&#123;</div><div class="line">		this(configLocations,true,null);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//允许指定双亲Ioc容器.</div><div class="line">	public FileSystemXmlApplicationContext(String[] configLocations,ApplicationContext parent)throws BeansException&#123;</div><div class="line">		this(configLocations,true,parent);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//指定是否初始化Ioc容器.</div><div class="line">	public FileSystemXmlApplicationContext(String[] configLocations,boolean refresh)throws BeansException&#123;</div><div class="line">		this(configLocations,refresh,null);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//最终通过该函数构造FileSystemXmlApplication.</div><div class="line">	//Refresh()中会载入BeanDefinition.</div><div class="line">	public FileSystemXmlApplicationContext(String[] configLocations,boolean refresh,ApplicationContext parent)</div><div class="line">			throws BeansException&#123;</div><div class="line">		super(parent);</div><div class="line">		setConfigLocations(configLocations);</div><div class="line">		if(refresh)&#123;</div><div class="line">		   //载入BeanDefinition的入口.</div><div class="line">			refresh();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//FileSystemXmlApplicationContext中Resource实现.</div><div class="line">	//返回的Resource不能直接被Ioc容器使用.</div><div class="line">	@Override</div><div class="line">	protected Resource getResourceByPath(String path)&#123;</div><div class="line">		if(path != null &amp;&amp; path.startsWith(&quot;/&quot;))&#123;</div><div class="line">			path=path.substring(1);</div><div class="line">		&#125;</div><div class="line">		return new FileSystemResource(path);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Ioc容器初始化"><a href="#Ioc容器初始化" class="headerlink" title="Ioc容器初始化"></a>Ioc容器初始化</h2><p><code>IOC</code>容器初始化通过<code>Refresh()</code>完成。</p>
+<p>在<code>Spring IOC</code>中，<code>Bean</code>载入和<code>Bean</code>依赖注入两个独立过程，依赖注入发生在首次<code>getBean</code>向容器索要<code>Bean</code>（除<code>Lazyinit</code>设置的<code>Bean</code>）。</p>
+<p>初始化过程：</p>
+<ul>
+<li><code>Resource</code>定位：<code>BeanDefinition</code>资源定位，<code>IOC</code>容器寻找数据过程。</li>
+<li>载入：将定义的<code>BeanDefinition</code>转换成<code>Spring</code>内部数据结构。</li>
+<li>注册：使用<code>BeanDefinitionRegistry</code>接口实现完成，将<code>BeanDefinition</code>注入<code>HashMap</code>中。</li>
+</ul>
+<h3 id="Resource定位"><a href="#Resource定位" class="headerlink" title="Resource定位"></a>Resource定位</h3><p><code>ClassPathResource res=new ClassPathResource(&quot;Beans.xml&quot;)</code></p>
+<p>定义<code>Resource</code>定位容器使用的<code>BeanDefinition</code>资源。</p>
+<p>定义的<code>Resource</code>不能由<code>DefaultListableBeanFactory</code>直接使用，<code>Spring</code>通过使用<code>BeanDefinitionReader</code>处理<code>Resource</code>。</p>
+<p><code>FileSystemXmlApplicationContext</code>继承结构</p>
+<p><img src="\img\实习\17.png" alt="image"></p>
+<p><code>FileSystemXmlApplicationContext</code>继承<code>AbstractXmlApplication</code>拥有读入以<code>Resource</code>定义的<code>BeanDefinition</code>能力。</p>
+<p><code>getResourceByPath()</code>被子类<code>FileSystemXmlApplicationContext</code>实现，返回<code>FileSystemResource</code>对象，通过此对象，<code>Spring</code>可以进行<code>IO</code>操作，完成<code>BeanDefinition</code>资源定位。</p>
+<p>对于其他<code>ApplicationContext</code>，生成其他类<code>Resource</code>，如<code>ClassPathResource</code>、<code>ServletContextResource</code>等。</p>
+<h3 id="载入"><a href="#载入" class="headerlink" title="载入"></a>载入</h3><p>完成定位后，为<code>BeanDefinition</code>载入创建<code>IO</code>条件，但具体数据没有读入。</p>
+<p>载入过程将用户定义的<code>Bean</code>转换成<code>IOC</code>容器内部的数据结构。</p>
+<h4 id="Refresh"><a href="#Refresh" class="headerlink" title="Refresh"></a>Refresh</h4><p>对于容器启动，<code>Refresh()</code>是很重要的方法，此方法在<code>AbstractApplicationContext</code>类中，描述<code>IOC</code>容器的初始化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void refresh() throws BeansException,IllegalStateException&#123;</div><div class="line">		synchronized(this.startupShutdownMonitor)&#123;</div><div class="line">		//准备初始化Ioc容器.</div><div class="line">		prepareRefresh();</div><div class="line"></div><div class="line">		//在子类中启动refreshBeanFactory.</div><div class="line">		ConfigurableListableBeanFactory beanFactory=obtainFreshBeanFactory();</div><div class="line"></div><div class="line">		prepareBeanFactory(beanFactory);</div><div class="line">		try&#123;</div><div class="line">			//设置BeanFactory的后置处理.</div><div class="line">			postProcessBeanFactory(beanFactory);</div><div class="line"></div><div class="line">			//调用BeanFactory的后处理器.</div><div class="line">			invokeBeanFactoryPostProcessors(beanFactory);</div><div class="line"></div><div class="line">			//注册Bean的后处理器.</div><div class="line">			registerBeanPostProcessors(beanFactory);</div><div class="line"></div><div class="line">			//对上下文的消息初始化.</div><div class="line">			initMessageSource();</div><div class="line"></div><div class="line">			//对上下文的事件机制初始化.</div><div class="line">			initApplicationEventMulticaster();</div><div class="line"></div><div class="line">			//初始化其他特殊Bean.</div><div class="line">			onRefresh();</div><div class="line"></div><div class="line">			//注册Bean.</div><div class="line">			registerListeners();</div><div class="line"></div><div class="line">			//实例化单件.</div><div class="line">			finishBeanFactoryInitialization(beanFactory);</div><div class="line"></div><div class="line">			//发布容器事件.</div><div class="line">			finishRefresh();</div><div class="line">		&#125;catch(BeansException ex)&#123;</div><div class="line">			destroyBeans();</div><div class="line">			cancelRefresh(ex);</div><div class="line">			throw ex;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="创建容器"><a href="#创建容器" class="headerlink" title="创建容器"></a>创建容器</h4><p>容器的创建在<code>AbstractRefreshableApplicationContext</code>中的<code>refreshBeanFactory()</code>方法完成，在建立<code>IOC</code>容器后，进行初始化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">protected final void refreshBeanFactory() throws BeansException&#123;</div><div class="line">	//判断是否已经建立BeanFactory.若建立则销毁并关闭BeanFactory.</div><div class="line">	if(hasBeanFactory())&#123;</div><div class="line">		destroyBeans();</div><div class="line">		closeBeanFactory();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	try&#123;</div><div class="line">		//创建DefaultListableBeanFactory.</div><div class="line">		DefaultListableBeanFactory beanFactory=createBeanFactory();</div><div class="line">		beanFactory.setSerializationId(getId());</div><div class="line">		customizeBeanFactory(beanFactory);</div><div class="line"></div><div class="line">		//启动对BeanDefinitions的载入.</div><div class="line">		loadBeanDefinitions(beanFactory);</div><div class="line">		synchronized(this.beanFactoryMonitor)&#123;</div><div class="line">			this.beanFactory=beanFactory;</div><div class="line">		&#125;</div><div class="line">	&#125;catch(IOException ex)&#123;</div><div class="line">		throw new ApplicationContextException(&quot;I/O error parsing bean definition source for &quot;+getDisplayName(),ex);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>//把具体实现委托子类完成.
+protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory)throws BeansException,IOException;</code></p>
+<p>在<code>AbstractRefreshableApplicationContext</code>中的<code>loadBeanDefintions</code>是抽象方法，具体载入在<code>AbstractXmlApplication</code>中实现。</p>
+<h3 id="loadBeanDefintions"><a href="#loadBeanDefintions" class="headerlink" title="loadBeanDefintions"></a>loadBeanDefintions</h3><h4 id="AbstractXmlApplication类"><a href="#AbstractXmlApplication类" class="headerlink" title="AbstractXmlApplication类"></a>AbstractXmlApplication类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory)throws BeansException,IOException&#123;</div><div class="line"></div><div class="line">	//1.创建XmlBeanDefinitionReader.</div><div class="line">	XmlBeanDefinitionReader beanDefinitionReader=new XmlBeanDefinitionReader(beanFactory);</div><div class="line"></div><div class="line">	//2.设置XmlBeanDefinitionReader.</div><div class="line">	beanDefinitionReader.setEnvironment(this.getEnvironment());</div><div class="line">	beanDefinitionReader.setResourceLoader(this);</div><div class="line">	beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));</div><div class="line"></div><div class="line">	//3.载入beanDefinitionReader.</div><div class="line">	initBeanDefinitionReader(beanDefinitionReader);</div><div class="line">	loadBeanDefinitions(beanDefinitionReader);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="XmlBeanDefinitionReader类"><a href="#XmlBeanDefinitionReader类" class="headerlink" title="XmlBeanDefinitionReader类"></a>XmlBeanDefinitionReader类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">protected void loadBeanDefinitions(XmlBeanDefinitionReader reader)throws BeansException,IOException&#123;</div><div class="line"></div><div class="line">	//以Resource方式获得配置文件的资源位置.</div><div class="line">	Resource[] configResources=getConfigResources();</div><div class="line">	if(configResources != null)&#123;</div><div class="line">		reader.loadBeanDefinitions(configResources);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//以String方式获得配置文件的资源位置.</div><div class="line">	String[] configLocations=getConfigLocations();</div><div class="line">	if(configLocations != null)&#123;</div><div class="line">		reader.loadBeanDefinitions(configLocations);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="AbstractBeanDefintionReader类"><a href="#AbstractBeanDefintionReader类" class="headerlink" title="AbstractBeanDefintionReader类"></a>AbstractBeanDefintionReader类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public int loadBeanDefinitions(Resource[] resources)throws BeanDefinitionStoreException&#123;</div><div class="line">   //遍历.</div><div class="line">   Assert.notNull(resources,&quot;Resource array must not be null&quot;);</div><div class="line">   int counter=0;</div><div class="line">   for(int i=0;i&lt;resources.length;i++)&#123;</div><div class="line">       counter+=loadBeanDefinitions(resources[i]);</div><div class="line">   &#125;</div><div class="line">   return counter;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="XmlBeanDefinitions类"><a href="#XmlBeanDefinitions类" class="headerlink" title="XmlBeanDefinitions类"></a>XmlBeanDefinitions类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//调用入口.</div><div class="line">public int loadBeanDefinitions(Resource resource)throws BeanDefinitionStoreException&#123;</div><div class="line">		return loadBeanDefinitions(new EncodedResource(resource));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">//载入Xml的BeanDefinition.</div><div class="line">public int loadBeanDefinitions(EncodedResource encodedResource)throws BeanDefinitionStoreException&#123;</div><div class="line">	Assert.notNull(encodedResource,&quot;EncodedResource must not be null&quot;);</div><div class="line">	if(logger.isInfoEnabled())&#123;</div><div class="line">		logger.info(&quot;Loading XML bean definitions from &quot;+encodedResource.getResource());</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	Set&lt;EncodedResource&gt; currentResources=this.resourcesCurrentlyBeingLoaded.get();</div><div class="line">	if(currentResources == null)&#123;</div><div class="line">		currentResources=new HashSet&lt;EncodedResource&gt;(4);</div><div class="line">		this.resourcesCurrentlyBeingLoaded.set(currentResources);</div><div class="line">	&#125;</div><div class="line">	if(!currentResources.add(encodedResource))&#123;</div><div class="line">		throw new BeanDefinitionStoreException(</div><div class="line">				&quot;Detected cyclic loading of &quot;+encodedResource+&quot;- check your import definitions!&quot;);</div><div class="line">	&#125;</div><div class="line">	//使用InputSource准备读取.</div><div class="line">	try&#123;</div><div class="line">		InputStream inputStream=encodedResource.getResource().getInputStream();</div><div class="line">		try&#123;</div><div class="line">			InputSource inputSource=new InputSource(inputStream);</div><div class="line">			if(encodedResource.getEncoding() != null)&#123;</div><div class="line">				inputSource.setEncoding(encodedResource.getEncoding());</div><div class="line">			&#125;</div><div class="line">			return doLoadBeanDefinitions(inputSource,encodedResource.getResource());</div><div class="line">		&#125;</div><div class="line">		//finally...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="XmlBeanDefinitionReader"><a href="#XmlBeanDefinitionReader" class="headerlink" title="XmlBeanDefinitionReader"></a>XmlBeanDefinitionReader</h4><p>加载资源后获取<code>Doucument</code>对象（不详细分析），可以在<code>DefaultDocumentLoader</code>中查看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//使用Document.</div><div class="line">protected int doLoadBeanDefinitions(InputSource inputSource,Resource resource)throws BeanDefinitionStoreException&#123;</div><div class="line">try&#123;</div><div class="line">	Document doc=doLoadDocument(inputSource,resource);</div><div class="line">	//将BeanDefintions转换为Spring内部数据结构.</div><div class="line">	return registerBeanDefinitions(doc,resource);</div><div class="line">&#125;//catch...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="XmlBeanDefintionReader"><a href="#XmlBeanDefintionReader" class="headerlink" title="XmlBeanDefintionReader"></a>XmlBeanDefintionReader</h4><p>对<code>Bean</code>载入数量进行统计。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public int registerBeanDefinitions(Document doc,Resource resource)throws BeanDefinitionStoreException&#123;</div><div class="line">	//获得BeanDefinitionDocumentReader对Xml的BeanDefinition进行解析.</div><div class="line">	BeanDefinitionDocumentReader documentReader=createBeanDefinitionDocumentReader();</div><div class="line">	int countBefore=getRegistry().getBeanDefinitionCount();</div><div class="line"></div><div class="line">	//具体解析过程.</div><div class="line">	documentReader.registerBeanDefinitions(doc,createReaderContext(resource));</div><div class="line">	return getRegistry().getBeanDefinitionCount()-countBefore;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>调用<code>Xml</code>解析器获得<code>Document</code>对象。</li>
+<li>调用<code>documentReader</code>进行解析，处理结果被<code>BeanDefintionHolder</code>对象持有，除包含<code>BeanDefintion</code>对象外，还有相关信息，如<code>Bean</code>的命名和别名集合等。</li>
+</ul>
+<h4 id="DefaultBeanDefinitionDocument"><a href="#DefaultBeanDefinitionDocument" class="headerlink" title="DefaultBeanDefinitionDocument"></a>DefaultBeanDefinitionDocument</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">//Element对应Spring BeanDefinition中的Xml元素.</div><div class="line">protected void processBeanDefinition(Element ele,BeanDefinitionParserDelegate delegate)&#123;</div><div class="line">	//BeanDefinitionHolder是BeanDefinition的封装类.</div><div class="line">	//封装BeanDefinition.Bean名.Bean别名.</div><div class="line">	BeanDefinitionHolder bdHolder=delegate.parseBeanDefinitionElement(ele);</div><div class="line">	if(bdHolder != null)&#123;</div><div class="line">		bdHolder=delegate.decorateBeanDefinitionIfRequired(ele,bdHolder);</div><div class="line">		try&#123;</div><div class="line">			//向Ioc容器注册解析获得的BeanDefinition.</div><div class="line">			BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder,getReaderContext().getRegistry());</div><div class="line">		&#125;catch(BeanDefinitionStoreException ex)&#123;</div><div class="line">			getReaderContext().error(&quot;Failed to register bean definition with name&apos;&quot;+</div><div class="line">					bdHolder.getBeanName()+&quot;&apos;&quot;,ele,ex);</div><div class="line">		&#125;</div><div class="line">		//注册完后发送消息.</div><div class="line">		getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="BeanDefinitionParserDelegate"><a href="#BeanDefinitionParserDelegate" class="headerlink" title="BeanDefinitionParserDelegate"></a>BeanDefinitionParserDelegate</h4><p>在此处可以看到对<code>BeanDefinition</code>处理，如<code>Id</code>、<code>name</code>和<code>aliase</code>等。</p>
+<p>将元素的值从<code>Xml</code>文件中相应属性读取出来，设置进<code>BeanDefinitionHolder</code>中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">public BeanDefinitionHolder parseBeanDefinitionElement(Element ele,BeanDefinition containingBean)&#123;</div><div class="line">	//获得Id.name.aliase.</div><div class="line">	String id=ele.getAttribute(ID_ATTRIBUTE);</div><div class="line">	String nameAttr=ele.getAttribute(NAME_ATTRIBUTE);</div><div class="line"></div><div class="line">	List&lt;String&gt; aliases=new ArrayList&lt;String&gt;();</div><div class="line">	if(StringUtils.hasLength(nameAttr))&#123;</div><div class="line">		String[] nameArr=StringUtils.tokenizeToStringArray(nameAttr,MULTI_VALUE_ATTRIBUTE_DELIMITERS);</div><div class="line">		aliases.addAll(Arrays.asList(nameArr));</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//beanName为Id.</div><div class="line">	String beanName=id;</div><div class="line">	//如果beanName为空并且别名部位空.</div><div class="line">	if(!StringUtils.hasText(beanName) &amp;&amp; !aliases.isEmpty())&#123;</div><div class="line">		//beanName为别名中的第一个.</div><div class="line">		beanName=aliases.remove(0);</div><div class="line">		if(logger.isDebugEnabled())&#123;</div><div class="line">			logger.debug(&quot;No XML &apos;id&apos; specified-using &apos;&quot;+beanName+</div><div class="line">					&quot;&apos; as bean name and &quot;+aliases+&quot; as aliases&quot;);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	if(containingBean == null)&#123;</div><div class="line">		checkNameUniqueness(beanName,aliases,ele);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//对Bean的详细解析.即依据Xml的Bean定义创建BeanDefinition的过程.</div><div class="line">	AbstractBeanDefinition beanDefinition=parseBeanDefinitionElement(ele,beanName,containingBean);</div><div class="line">	if(beanDefinition != null)&#123;</div><div class="line">		//BeanName是否存在.</div><div class="line">		if(!StringUtils.hasText(beanName))&#123;</div><div class="line">			try&#123;</div><div class="line">				if(containingBean != null)&#123;</div><div class="line">					beanName=BeanDefinitionReaderUtils.generateBeanName(</div><div class="line">							beanDefinition,this.readerContext.getRegistry(),true);</div><div class="line">				&#125;else&#123;</div><div class="line">					beanName=this.readerContext.generateBeanName(beanDefinition);</div><div class="line">					String beanClassName=beanDefinition.getBeanClassName();</div><div class="line">					if(beanClassName != null &amp;&amp;</div><div class="line">							beanName.startsWith(beanClassName) &amp;&amp; beanName.length() &gt; beanClassName.length() &amp;&amp;</div><div class="line">							!this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) &#123;</div><div class="line">						aliases.add(beanClassName);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				if(logger.isDebugEnabled())&#123;</div><div class="line">					logger.debug(&quot;Neither XML &apos;id&apos; nor &apos;name&apos; specified -&quot;+</div><div class="line">							&quot;using generated bean name [&quot;+beanName+&quot;]&quot;);</div><div class="line">				&#125;</div><div class="line">			&#125;catch(Exception ex)&#123;</div><div class="line">				error(ex.getMessage(),ele);</div><div class="line">				return null;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		String[] aliasesArray=StringUtils.toStringArray(aliases);</div><div class="line">		return new BeanDefinitionHolder(beanDefinition,beanName,aliasesArray);</div><div class="line">	&#125;</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">protected void checkNameUniqueness(String beanName,List&lt;String&gt; aliases,Element beanElement)&#123;</div><div class="line">	String foundName=null;</div><div class="line"></div><div class="line">	//BeanName是否已经存在.</div><div class="line">	if(StringUtils.hasText(beanName) &amp;&amp; this.usedNames.contains(beanName))&#123;</div><div class="line">		foundName=beanName;</div><div class="line">	&#125;</div><div class="line">	//别名是否已经存在.</div><div class="line">	if(foundName == null)&#123;</div><div class="line">		foundName=CollectionUtils.findFirstMatch(this.usedNames,aliases);</div><div class="line">	&#125;</div><div class="line">	if(foundName != null)&#123;</div><div class="line">		error(&quot;Bean name&apos;&quot;+foundName+&quot;&apos;is already used in this &lt;beans&gt; element&quot;, beanElement);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	this.usedNames.add(beanName);</div><div class="line">	this.usedNames.addAll(aliases);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>已存在的<code>BeanName</code>和<code>aliases</code>存入<code>HashSet</code>中。</p>
+<p><code>private final Set&lt;String&gt; usedNames=new HashSet&lt;String&gt;();</code></p>
+<h4 id="解析BeanDefinition"><a href="#解析BeanDefinition" class="headerlink" title="解析BeanDefinition"></a>解析BeanDefinition</h4><p>具体生成<code>BeanDefinition</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">public AbstractBeanDefinition parseBeanDefinitionElement(</div><div class="line">			Element ele,String beanName,BeanDefinition containingBean)&#123;</div><div class="line">	this.parseState.push(new BeanEntry(beanName));</div><div class="line"></div><div class="line">	//获得className.</div><div class="line">	//只读取class名字.并不涉及实例化.对象实例化在依赖注入时完成.</div><div class="line">	String className=null;</div><div class="line">	if(ele.hasAttribute(CLASS_ATTRIBUTE))&#123;</div><div class="line">		className=ele.getAttribute(CLASS_ATTRIBUTE).trim();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	try&#123;</div><div class="line">		String parent=null;</div><div class="line">		if(ele.hasAttribute(PARENT_ATTRIBUTE))&#123;</div><div class="line">			parent=ele.getAttribute(PARENT_ATTRIBUTE);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		//创建BeanDefinition对象.</div><div class="line">		AbstractBeanDefinition bd=createBeanDefinition(className,parent);</div><div class="line"></div><div class="line">		//设置Scope.Abstract.lazy-init等.</div><div class="line">		parseBeanDefinitionAttributes(ele,beanName,containingBean,bd);</div><div class="line">		bd.setDescription(DomUtils.getChildElementValueByTagName(ele,DESCRIPTION_ELEMENT));</div><div class="line">		parseMetaElements(ele,bd);</div><div class="line">		parseLookupOverrideSubElements(ele,bd.getMethodOverrides());</div><div class="line">		parseReplacedMethodSubElements(ele,bd.getMethodOverrides());</div><div class="line"></div><div class="line">		//解析Bean的构造函数设置.</div><div class="line">		parseConstructorArgElements(ele,bd);</div><div class="line"></div><div class="line">		//解析Bean的Property设置.</div><div class="line">		parsePropertyElements(ele,bd);</div><div class="line">		parseQualifierElements(ele,bd);</div><div class="line"></div><div class="line">		bd.setResource(this.readerContext.getResource());</div><div class="line">		bd.setSource(extractSource(ele));</div><div class="line"></div><div class="line">		return bd;</div><div class="line">	&#125;catch(ClassNotFoundException ex)&#123;</div><div class="line">		error(&quot;Bean class [&quot;+className+&quot;] not found&quot;,ele,ex);</div><div class="line">	&#125;catch(NoClassDefFoundError err)&#123;</div><div class="line">		error(&quot;Class that bean class [&quot;+className+&quot;] depends on not found&quot;,ele,err);</div><div class="line">	&#125;catch(Throwable ex)&#123;</div><div class="line">		error(&quot;Unexpected failure during bean definition parsing&quot;,ele,ex);</div><div class="line">	&#125;finally&#123;</div><div class="line">		this.parseState.pop();</div><div class="line">	&#125;</div><div class="line">	return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="解析Property"><a href="#解析Property" class="headerlink" title="解析Property"></a>解析Property</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">//对指定Bean元素Property子元素集合进行解析.</div><div class="line">public void parsePropertyElements(Element beanEle,BeanDefinition bd)&#123;</div><div class="line">	//遍历所有Bean元素下定义的Property元素.</div><div class="line">	NodeList nl=beanEle.getChildNodes();</div><div class="line">	for(int i=0;i&lt;nl.getLength();i++)&#123;</div><div class="line">		Node node=nl.item(i);</div><div class="line">		//判断该元素是否为Property元素.</div><div class="line">		if(isCandidateElement(node) &amp;&amp; nodeNameEquals(node,PROPERTY_ELEMENT))&#123;</div><div class="line">			parsePropertyElement((Element)node,bd);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public void parsePropertyElement(Element ele,BeanDefinition bd)&#123;</div><div class="line">	//获得Property的名字.</div><div class="line">	String propertyName=ele.getAttribute(NAME_ATTRIBUTE);</div><div class="line">	if(!StringUtils.hasLength(propertyName))&#123;</div><div class="line">		error(&quot;Tag &apos;property&apos; must have a &apos;name&apos; attribute&quot;,ele);</div><div class="line">		return;</div><div class="line">	&#125;</div><div class="line">	this.parseState.push(new PropertyEntry(propertyName));</div><div class="line">	try&#123;</div><div class="line">		//如果同一Bean中存在重名的Property.则直接返回.即起作用的是第一个.</div><div class="line">		if(bd.getPropertyValues().contains(propertyName))&#123;</div><div class="line">			error(&quot;Multiple &apos;property&apos; definitions for property &apos;&quot;+propertyName+&quot;&apos;&quot;,ele);</div><div class="line">			return;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		//解析Property值.结果封装到PropertyValue对象中.然后设置进BeanDefinitionHolder中.</div><div class="line">		Object val=parsePropertyValue(ele,bd,propertyName);</div><div class="line">		PropertyValue pv=new PropertyValue(propertyName,val);</div><div class="line">		</div><div class="line">		parseMetaElements(ele,pv);</div><div class="line">		pv.setSource(extractSource(ele));</div><div class="line">		bd.getPropertyValues().addPropertyValue(pv);</div><div class="line">	&#125;finally&#123;</div><div class="line">		this.parseState.pop();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">//获取Property的值.</div><div class="line">public Object parsePropertyValue(Element ele,BeanDefinition bd,String propertyName)&#123;</div><div class="line">	String elementName=(propertyName != null)?</div><div class="line">					&quot;&lt;property&gt; element for property &apos;&quot;+propertyName+&quot;&apos;&quot;:</div><div class="line">					&quot;&lt;constructor-arg&gt; element&quot;;</div><div class="line"></div><div class="line">	NodeList nl=ele.getChildNodes();</div><div class="line">	Element subElement=null;</div><div class="line"></div><div class="line">	//获取所有子元素.</div><div class="line">	for(int i=0;i&lt;nl.getLength();i++)&#123;</div><div class="line">		Node node=nl.item(i);</div><div class="line">		if(node instanceof Element &amp;&amp; !nodeNameEquals(node,DESCRIPTION_ELEMENT) &amp;&amp;</div><div class="line">				!nodeNameEquals(node,META_ELEMENT))&#123;</div><div class="line">			if(subElement != null)&#123;</div><div class="line">				error(elementName+&quot;must not contain more than one sub-element&quot;,ele);</div><div class="line">			&#125;else&#123;</div><div class="line">				//当前元素包含子元素.</div><div class="line">				subElement=(Element)node;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	boolean hasRefAttribute=ele.hasAttribute(REF_ATTRIBUTE);</div><div class="line">	boolean hasValueAttribute=ele.hasAttribute(VALUE_ATTRIBUTE);</div><div class="line"></div><div class="line">	//判断Property属性.不允许同时是ref和value.</div><div class="line">	if((hasRefAttribute &amp;&amp; hasValueAttribute) ||</div><div class="line">			((hasRefAttribute || hasValueAttribute) &amp;&amp; subElement != null))&#123;</div><div class="line">		error(elementName+</div><div class="line">				&quot;is only allowed to contain either &apos;ref&apos; attribute OR &apos;value&apos; attribute OR sub-element&quot;,ele);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//如果是ref.创建一个ref数据对象RuntimeBeanReference.封装ref信息.</div><div class="line">	if(hasRefAttribute)&#123;</div><div class="line">		String refName=ele.getAttribute(REF_ATTRIBUTE);</div><div class="line">		if(!StringUtils.hasText(refName))&#123;</div><div class="line">			error(elementName + &quot;contains empty &apos;ref&apos; attribute&quot;,ele);</div><div class="line">		&#125;</div><div class="line">		RuntimeBeanReference ref=new RuntimeBeanReference(refName);</div><div class="line">		ref.setSource(extractSource(ele));</div><div class="line">		return ref;</div><div class="line">	&#125;</div><div class="line">	//如果是value.创建一个value数据对象TypedStringValue.封装value信息.</div><div class="line">	else if(hasValueAttribute)&#123;</div><div class="line">		TypedStringValue valueHolder=new TypedStringValue(ele.getAttribute(VALUE_ATTRIBUTE));</div><div class="line">		valueHolder.setSource(extractSource(ele));</div><div class="line">		return valueHolder;</div><div class="line">	&#125;</div><div class="line">	//如果还有子元素.触发对子元素解析.</div><div class="line">	else if(subElement != null)&#123;</div><div class="line">		return parsePropertySubElement(subElement,bd);</div><div class="line">	&#125;</div><div class="line">	else&#123;</div><div class="line">		error(elementName+&quot;must specify a ref or value&quot;,ele);</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="子元素解析"><a href="#子元素解析" class="headerlink" title="子元素解析"></a>子元素解析</h4><p><code>Array</code>、<code>List</code>、<code>Set</code>和<code>Map</code>等元素进行解析，生成对应数据对象<code>ManagedArray</code>、<code>ManagedList</code>和<code>ManagedSet</code>等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public Object parsePropertySubElement(Element ele,BeanDefinition bd,String defaultValueType)&#123;</div><div class="line"></div><div class="line">    //......	</div><div class="line"></div><div class="line">	//判断Property子元素属于哪种.</div><div class="line">	else if(nodeNameEquals(ele,ARRAY_ELEMENT))&#123;</div><div class="line">		return parseArrayElement(ele,bd);</div><div class="line">	&#125;</div><div class="line">	else if(nodeNameEquals(ele,LIST_ELEMENT))&#123;</div><div class="line">		return parseListElement(ele,bd);</div><div class="line">	&#125;</div><div class="line">	else if(nodeNameEquals(ele,SET_ELEMENT))&#123;</div><div class="line">		return parseSetElement(ele,bd);</div><div class="line">	&#125;</div><div class="line">	else if(nodeNameEquals(ele,MAP_ELEMENT))&#123;</div><div class="line">		return parseMapElement(ele,bd);</div><div class="line">	&#125;</div><div class="line">	else if(nodeNameEquals(ele,PROPS_ELEMENT))&#123;</div><div class="line">		return parsePropsElement(ele);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	//......</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>经过逐层解析，在<code>Xml</code>中定义<code>BeanDefinition</code>载入到<code>IOC</code>容器中，在<code>IOC</code>容器中建立了对应数据结构。</p>
+<p><img src="\img\实习\24.png" alt="image"></p>
+<h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><p><code>BeanDefinition</code>完成载入和解析后，在<code>IOC</code>容器中建立数据结构及数据表示，但不能被<code>IOC</code>容器直接使用，需要注册。</p>
+<p><code>private final Map&lt;String,BeanDefinition&gt; beanDefinitionMap=new ConcurrentHashMap&lt;String,BeanDefinition&gt;(256);</code></p>
+<p>在<code>DefaultListableBeanFactory</code>中实现<code>BeanDefinitionRegistry</code>接口，完成<code>BeanDefinition</code>向容器注册，即设置到<code>HashMap</code>中。</p>
+<p><code>public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
+        implements ConfigurableListableBeanFactory,BeanDefinitionRegistry,Serializable{}</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">public void registerBeanDefinition(String beanName,BeanDefinition beanDefinition)</div><div class="line">			throws BeanDefinitionStoreException&#123;</div><div class="line"></div><div class="line">	Assert.hasText(beanName,&quot;Bean name must not be empty&quot;);</div><div class="line">	Assert.notNull(beanDefinition,&quot;BeanDefinition must not be null&quot;);</div><div class="line"></div><div class="line">	if(beanDefinition instanceof AbstractBeanDefinition)&#123;</div><div class="line">		try&#123;</div><div class="line">			((AbstractBeanDefinition)beanDefinition).validate();</div><div class="line">		&#125;catch(BeanDefinitionValidationException ex)&#123;</div><div class="line">			throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(),beanName,</div><div class="line">					&quot;Validation of bean definition failed&quot;,ex);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	BeanDefinition oldBeanDefinition;</div><div class="line">	oldBeanDefinition=this.beanDefinitionMap.get(beanName);</div><div class="line"></div><div class="line">	//校验是否有相同名字的BeanDefinition在Ioc容器注册.</div><div class="line">	//如果有相同名字.又不允许覆盖.抛出异常.</div><div class="line">	if(oldBeanDefinition != null)&#123;</div><div class="line">		//是否允许覆盖.</div><div class="line">		if(!isAllowBeanDefinitionOverriding())&#123;</div><div class="line">			throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(),beanName,</div><div class="line">					&quot;Cannot register bean definition [&quot;+beanDefinition+&quot;] for bean &apos;&quot;+beanName+</div><div class="line">					&quot;&apos;: There is already [&quot;+oldBeanDefinition+&quot;] bound.&quot;);</div><div class="line">		&#125;else if(oldBeanDefinition.getRole()&lt;beanDefinition.getRole())&#123;</div><div class="line">			if(this.logger.isWarnEnabled())&#123;</div><div class="line">				this.logger.warn(&quot;Overriding user-defined bean definition for bean &apos;&quot;+beanName+</div><div class="line">						&quot;&apos; with a framework-generated bean definition: replacing [&quot;+</div><div class="line">						oldBeanDefinition+&quot;] with [&quot;+beanDefinition+&quot;]&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;else if(!beanDefinition.equals(oldBeanDefinition))&#123;</div><div class="line">			if(this.logger.isInfoEnabled())&#123;</div><div class="line">				this.logger.info(&quot;Overriding bean definition for bean &apos;&quot;+beanName+</div><div class="line">						&quot;&apos; with a different definition: replacing [&quot;+oldBeanDefinition+</div><div class="line">						&quot;] with [&quot;+beanDefinition+&quot;]&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;else&#123;</div><div class="line">			if(this.logger.isDebugEnabled())&#123;</div><div class="line">				this.logger.debug(&quot;Overriding bean definition for bean &apos;&quot;+beanName+</div><div class="line">						&quot;&apos; with an equivalent definition: replacing [&quot;+oldBeanDefinition+</div><div class="line">						&quot;] with [&quot;+beanDefinition+&quot;]&quot;);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		//覆盖.</div><div class="line">		this.beanDefinitionMap.put(beanName,beanDefinition);</div><div class="line">	&#125;else&#123;</div><div class="line">		//将BeanDinfintion放入HashMap中.</div><div class="line">		if(hasBeanCreationStarted())&#123;</div><div class="line">			synchronized(this.beanDefinitionMap)&#123;</div><div class="line">				this.beanDefinitionMap.put(beanName,beanDefinition);</div><div class="line">				List&lt;String&gt; updatedDefinitions=new ArrayList&lt;String&gt;(this.beanDefinitionNames.size()+1);</div><div class="line">				updatedDefinitions.addAll(this.beanDefinitionNames);</div><div class="line">				updatedDefinitions.add(beanName);</div><div class="line">				this.beanDefinitionNames=updatedDefinitions;</div><div class="line">				if(this.manualSingletonNames.contains(beanName))&#123;</div><div class="line">					Set&lt;String&gt; updatedSingletons=new LinkedHashSet&lt;String&gt;(this.manualSingletonNames);</div><div class="line">					updatedSingletons.remove(beanName);</div><div class="line">					this.manualSingletonNames=updatedSingletons;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;else&#123;</div><div class="line">			this.beanDefinitionMap.put(beanName,beanDefinition);</div><div class="line">			this.beanDefinitionNames.add(beanName);</div><div class="line">			this.manualSingletonNames.remove(beanName);</div><div class="line">		&#125;</div><div class="line">		this.frozenBeanDefinitionNames=null;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	if(oldBeanDefinition != null || containsSingleton(beanName))&#123;</div><div class="line">		resetBeanDefinition(beanName);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>完成注册后，建立<code>Bean</code>配置信息，这些信息依赖反转的基础。</p>
+
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+
+
+
+
+
+
+
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2017/08/10/Ioc容器依赖注入源码分析/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2017/07/25/Jvm虚拟机调优/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/SideImage.jpg);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/FaceImage.jpg" alt="游思达's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        553408524@qq.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/" target="_self">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2017/08/">八月 2017<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/07/">七月 2017<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/06/">六月 2017<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/04/">四月 2017<span class="sidebar_archives-count">4</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/Git/">Git<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java-基础/">Java 基础<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java基础/">Java基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/分布式/">分布式<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/数据结构/">数据结构<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/杂七杂八/">杂七杂八<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/框架/">框架<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">5</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+
+    <!-- Article Number  -->
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+    <a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+        <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+            主题 - Material
+            <span class="sidebar-badge badge-circle">i</span>
+        </div>
+    </a>
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/yousida" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-github.svg);">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+        <a href="https://www.zhihu.com/people/you-si-da" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-zhihu.svg);">
+                <span class="visuallyhidden">Zhihu</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©&nbsp;
+            <script type="text/javascript">
+                var fd = new Date();
+                document.write(fd.getFullYear());
+            </script>
+            &nbsp;游思达的博客
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import File -->
+
+    <script src="/js/lazyload.min.js"></script>
+    <script src="/js/js.min.js"></script>
+
+
+
+    <script src="/js/nprogress.js"></script>
+
+
+<script type="text/javascript">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Window Load-->
+<script>
+    $(window).load(function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+</script>
+
+<!-- MathJax Load-->
+
+<script>
+    <!-- Offer LazyLoad -->
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    <!-- Start Queue -->
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>

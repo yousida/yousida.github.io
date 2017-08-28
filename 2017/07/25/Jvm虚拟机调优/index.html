@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+    <!--
+        © Material Theme
+        https://github.com/viosey/hexo-theme-material
+        Version: 1.3.4 -->
+
+    <!-- Title -->
+    
+    <title>
+        
+            Jvm虚拟机调优 | 
+        
+        游思达的博客
+    </title>
+
+    <!-- Meta & Info -->
+    <meta charset="utf-8">
+
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    
+    
+    
+    
+    
+    
+
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0097A7">
+    <meta name="author" content="游思达">
+    <meta name="description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    <meta name="keywords" content="null">
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" sizes="192x192" href="/img/favicon.png">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!--iOS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-title" content="Title">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="480">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="游思达的博客">
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="http://yoursite.com">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Jvm虚拟机调优 | 游思达的博客">
+    <meta property="og:description" content="落霞与孤鹜齐飞，秋水共长天一色。">
+    
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import CSS & jQuery -->
+    
+        <link rel="stylesheet" href="/css/material.min.css">
+        <link rel="stylesheet" href="/css/style.min.css">
+        <!-- Config CSS -->
+
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #0097A7 !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #0097A7 !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #0097A7 !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/queue.js"></script>
+    
+
+    <!-- UC Browser Compatible -->
+    <script>
+        var agent = navigator.userAgent.toLowerCase();
+        if(agent.indexOf('ucbrowser')>0) {
+            document.write("<link rel=\"stylesheet\" href=\"/css/uc.css\">");
+            alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+        }
+    </script>
+
+    
+
+    
+
+
+    <!-- Bing Background -->
+    
+
+    <!-- Custom Head -->
+    
+</head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+    <!-- Left aligned menu below button -->
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#OutofMemoryError异常"><span class="post-toc-number">1.</span> <span class="post-toc-text">OutofMemoryError异常</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#堆"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">堆</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#代码"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">代码</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#参数"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">参数</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#异常"><span class="post-toc-number">1.1.3.</span> <span class="post-toc-text">异常</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决"><span class="post-toc-number">1.1.4.</span> <span class="post-toc-text">解决</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#虚拟机栈和本地方法栈"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">虚拟机栈和本地方法栈</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#代码-1"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">代码</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#参数-1"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">参数</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#异常-1"><span class="post-toc-number">1.2.3.</span> <span class="post-toc-text">异常</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解析"><span class="post-toc-number">1.2.4.</span> <span class="post-toc-text">解析</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#方法区"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">方法区</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#本机直接溢出"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">本机直接溢出</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#虚拟机调优案例"><span class="post-toc-number">2.</span> <span class="post-toc-text">虚拟机调优案例</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#高性能硬件上程序部署策略"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">高性能硬件上程序部署策略</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#案例"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">案例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分析"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">分析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决-1"><span class="post-toc-number">2.1.3.</span> <span class="post-toc-text">解决</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#集群间同步导致资源溢出"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">集群间同步导致资源溢出</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#案例-1"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">案例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分析-1"><span class="post-toc-number">2.2.2.</span> <span class="post-toc-text">分析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决-2"><span class="post-toc-number">2.2.3.</span> <span class="post-toc-text">解决</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#堆外内存导致溢出错误"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">堆外内存导致溢出错误</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#案例-2"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">案例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分析-2"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">分析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决-3"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">解决</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#服务器间Jvm进程崩溃"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">服务器间Jvm进程崩溃</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#案例-3"><span class="post-toc-number">2.4.1.</span> <span class="post-toc-text">案例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分析-3"><span class="post-toc-number">2.4.2.</span> <span class="post-toc-text">分析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决-4"><span class="post-toc-number">2.4.3.</span> <span class="post-toc-text">解决</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#不恰当数据结构"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">不恰当数据结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#案例-4"><span class="post-toc-number">2.5.1.</span> <span class="post-toc-text">案例</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分析-4"><span class="post-toc-number">2.5.2.</span> <span class="post-toc-text">分析</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#解决-5"><span class="post-toc-number">2.5.3.</span> <span class="post-toc-text">解决</span></a></li></ol></li></ol></li></ol>
+
+        <!--
+        <li class="mdl-menu__item">
+            Some Action
+        </li>
+        -->
+    </ul>
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        
+            <!-- Random Thumbnail -->
+            <div class="post_thumbnail-random mdl-card__media mdl-color-text--grey-50">
+            <script>
+    var randomNum = Math.floor(Math.random() * 19 + 1);
+
+    $('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
+    $('.post_thumbnail-random').addClass('lazy');
+</script>
+
+        
+    
+            <p class="article-headline-p">
+                Jvm虚拟机调优
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/FaceImage.jpg" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>游思达</strong>
+        <span>7月 25, 2017</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        
+    </ul>
+    
+
+    <!-- Share -->
+    <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Jvm虚拟机调优&url=http://yoursite.com//2017/07/25/Jvm虚拟机调优/index.html&pic=&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Jvm虚拟机调优&url=http://yoursite.com//2017/07/25/Jvm虚拟机调优/index.html&via=游思达" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com//2017/07/25/Jvm虚拟机调优/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com//2017/07/25/Jvm虚拟机调优/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <h2 id="OutofMemoryError异常"><a href="#OutofMemoryError异常" class="headerlink" title="OutofMemoryError异常"></a>OutofMemoryError异常</h2><p>除程序计数器外，虚拟机内存其他运行时区域都会发生<code>OutOfMemoryError</code>异常。</p>
+<p>设置虚拟机启动参数。</p>
+<p><img src="\img\实习\18.png" alt="image"></p>
+<p>在<code>VM options</code>中填写。</p>
+<h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><p>Java堆用于存储对象实例，只有不断的创建对象，且保证<code>GC Roots</code>到对象之间有可达路径避免垃圾回收机制清除对象，在对象数量到达最大堆的容量限制后产生内存溢出异常。</p>
+<ul>
+<li><code>-Xms</code>:设置堆最小值。</li>
+<li><code>-Xms</code>:设置堆最大值。</li>
+<li><code>-XX:+HeapDumpOnOutOfMemory</code>:虚拟机出现内存溢出异常时<code>Dump</code>当前内存堆转储快照。</li>
+</ul>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Main&#123;</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        List&lt;OOMObject&gt; list=new ArrayList&lt;&gt;();</div><div class="line">        while(true)&#123;</div><div class="line">            list.add(new OOMObject());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    static class OOMObject&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><p>设置堆内存20m。</p>
+<p><code>-Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError</code></p>
+<h4 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">java.lang.OutOfMemoryError: Java heap space</div><div class="line">Dumping heap to java_pid35302.hprof ...</div><div class="line">Heap dump file created [27843612 bytes in 0.776 secs]</div></pre></td></tr></table></figure>
+<h4 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h4><p>通过内存映像分析工具对堆转储快照进行分析，确认内存中的对象是否有必要，即分清内存泄漏还是内存溢出。</p>
+<ul>
+<li>内存泄漏:查看泄漏对象到<code>GC Roots</code>的引用链，找到泄漏对象通过怎样路径与<code>GC Roots</code>相关联导致垃圾回收器无法自动回收。</li>
+<li>内存溢出:检查虚拟机堆参数与物理内存对比是否可以调大。</li>
+</ul>
+<h3 id="虚拟机栈和本地方法栈"><a href="#虚拟机栈和本地方法栈" class="headerlink" title="虚拟机栈和本地方法栈"></a>虚拟机栈和本地方法栈</h3><p>在<code>HotSpot</code>中不区分虚拟机栈和本地方法栈。</p>
+<ul>
+<li><code>-Xoss</code>:设置本地方法栈，在<code>HotSpot</code>中无效。</li>
+<li><code>-Xss</code>:设置栈容量。</li>
+</ul>
+<p>栈中异常:</p>
+<ul>
+<li><code>StackOverflowError</code>:线程请求的栈深度大于虚拟机允许的最大深度。</li>
+<li><code>OutOfMemoryError</code>:虚拟机扩展栈时无法申请足够的内存空间。</li>
+</ul>
+<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class Main&#123;</div><div class="line"></div><div class="line">    private int stackLength=1;</div><div class="line"></div><div class="line">    public void stackLeak()&#123;</div><div class="line">        stackLength++;</div><div class="line">        stackLeak();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">       Main m=new Main();</div><div class="line">       try&#123;</div><div class="line">           m.stackLeak();</div><div class="line">       &#125;catch(Throwable e)&#123;</div><div class="line">           System.out.println(&quot;stack length:&quot;+m.stackLength);</div><div class="line">           throw e;</div><div class="line">       &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a>参数</h4><p><code>-Xss160k</code></p>
+<h4 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">stack length:771</div><div class="line">Exception in thread &quot;main&quot; java.lang.StackOverflowError</div></pre></td></tr></table></figure>
+<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><p>在单个线程下，无论由于栈帧太大(超过虚拟机允许的栈深度)还是虚拟机栈容量太小(扩展栈时无法申请足够空间)，抛出<code>StackOverflowError</code>异常。</p>
+<p>可以通过不断创建线程产生内存溢出异常，每个线程的栈分配内存越大，越容易产生内存溢出异常。</p>
+<p>操作系统分配给每个进程内存存在限制，譬如32位<code>Window</code>限制2GB。虚拟机提供参数控制堆和方法区内存值。</p>
+<p>虚拟机栈和本地方法栈内存=<code>Jvm</code>进程内存-<code>Xms</code>(最大堆容量)-<code>MaxPermSize</code>(最大方法区容量)。</p>
+<p>程序计数器消耗内存很小，虚拟机进程本身耗费内存忽略，每个线程分配栈容量越大，可以创建线程数越少。</p>
+<h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><ul>
+<li><code>-XX:MetaspaceSize</code>:初始化方法区大小。</li>
+<li><code>-XX:MaxMetaspaceSize</code>:方法区最大内存。</li>
+</ul>
+<p>在动态生成大量<code>Class</code>应用中，需要特别注意类回收情况。</p>
+<h3 id="本机直接溢出"><a href="#本机直接溢出" class="headerlink" title="本机直接溢出"></a>本机直接溢出</h3><ul>
+<li><code>-XX:MaxDirectMemorySize</code>:指定<code>DirectMemory</code>容量，默认与堆最大值一样。</li>
+</ul>
+<p><code>DirectMemory</code>导致的内存溢出，在<code>Heap Dump</code>文件中不会看到明显异常。</p>
+<h2 id="虚拟机调优案例"><a href="#虚拟机调优案例" class="headerlink" title="虚拟机调优案例"></a>虚拟机调优案例</h2><h3 id="高性能硬件上程序部署策略"><a href="#高性能硬件上程序部署策略" class="headerlink" title="高性能硬件上程序部署策略"></a>高性能硬件上程序部署策略</h3><h4 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h4><p>一个部署在32位JDK硬件系统上的在线文档类型网站，更好硬件系统后，将堆设置12GB(16GB物理内存)，一段时间后出现长时间失去响应的情况。</p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>监控服务器发现网站失去响应由于<code>GC</code>停顿导致，回收12GB的堆，<code>Full GC</code>停顿时长10秒，且访问文档需要将文档提取进内存，导致内存中出现许多大对象直接进入老年代，没有在<code>Minor GC</code>中清理掉，导致内存很快消耗殆尽。</p>
+<p>问题:过大的堆内存进行回收时长时间停顿。</p>
+<h4 id="解决-1"><a href="#解决-1" class="headerlink" title="解决"></a>解决</h4><p>在高性能硬件上部署程序:</p>
+<ul>
+<li>64位为JDK使用大内存。</li>
+<li>使用若干个32位虚拟机建立逻辑集群利用硬件资源。</li>
+</ul>
+<p>此案例使用第一种方式，给Java虚拟机分配超大堆前提控制<code>Full GC</code>频率足够低，至少不影响用户使用，关键在于不能有成批量、长生存时间的大对象产生。</p>
+<p>第二种方式在一台物理机器上启动多个应用服务器进程，每个服务器进程分配不同端口。</p>
+<p>注意:</p>
+<ul>
+<li>避免竞争全局资源，如磁盘竞争(各个节点同时访问磁盘文件)。</li>
+<li>很难高效利用资源池，每个节点有独立的资源池。</li>
+</ul>
+<h3 id="集群间同步导致资源溢出"><a href="#集群间同步导致资源溢出" class="headerlink" title="集群间同步导致资源溢出"></a>集群间同步导致资源溢出</h3><h4 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h4><p>B／S系统，硬件两台小型机，每台2个CPU、8GB内存和3个服务器，使用<code>JBossCache</code>构建全局缓存，启用全局缓存后，多次出现内存溢出问题。</p>
+<h4 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h4><p>由于信息有传输失败需要重发的可能，在确认所以节点收到正确消息前，发送的消息在内存中保存。</p>
+<p>系统中有一个负责安全校验的<code>Filter</code>，每当收到请求时，将最后操作时间同步到所有节点。在服务使用过程中，一个页面产生数十次请求，<code>Filter</code>导致集群间节点网络交换非常频繁，<br>当网络不能满足需求时，重发数据在内存中堆积，产生内存溢出。</p>
+<h4 id="解决-2"><a href="#解决-2" class="headerlink" title="解决"></a>解决</h4><p>可以允许读操作频繁，数据在本地内存中有一份副本；不应当有频繁写操作，带来巨大网络同步开销。</p>
+<h3 id="堆外内存导致溢出错误"><a href="#堆外内存导致溢出错误" class="headerlink" title="堆外内存导致溢出错误"></a>堆外内存导致溢出错误</h3><h4 id="案例-2"><a href="#案例-2" class="headerlink" title="案例"></a>案例</h4><p>基于B／S的电子考试系统，测试期间服务器不定时抛出内存溢出异常，调大堆内存基本没效果。</p>
+<h4 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h4><p>操作系统对每个进程管理的内存有限制，此服务器限制2GB，其中堆占2GB，<code>Direct Memory</code>占0.4GB。</p>
+<p>垃圾收集进行时，虚拟机虽然对<code>Direct Memory</code>进行回收，但并不像老年代空间不足通知收集器进行回收，它只能等待老年代<code>Full GC</code>后清除废弃对象。</p>
+<h4 id="解决-3"><a href="#解决-3" class="headerlink" title="解决"></a>解决</h4><p>除了Java堆和永生代外，需注意如下区域占较多内存，受操作系统最大内存限制。</p>
+<ul>
+<li><code>Direct Memory</code>:通过<code>-XX:MaxDirectMemorySize</code>调整大小，<code>Nio</code>使用此内存。</li>
+<li><code>Socket</code>缓存区:每个<code>Socket</code>连接有<code>Receive</code>和<code>Send</code>两个缓存区。</li>
+<li><code>JNI</code>:使用<code>JNI</code>调用本地库。</li>
+<li>线程堆栈。</li>
+</ul>
+<h3 id="服务器间Jvm进程崩溃"><a href="#服务器间Jvm进程崩溃" class="headerlink" title="服务器间Jvm进程崩溃"></a>服务器间Jvm进程崩溃</h3><h4 id="案例-3"><a href="#案例-3" class="headerlink" title="案例"></a>案例</h4><p>基于B／S的系统，硬件两台2个CPU、8GB内存的系统，运行期间发现频繁出现集群节点的虚拟机进程自动关闭，异常如下:</p>
+<p><code>Java.net.SocketException:Connection reset</code></p>
+<h4 id="分析-3"><a href="#分析-3" class="headerlink" title="分析"></a>分析</h4><p>异常是远程断开链接异常，系统与一个OA门户做了集成，需要通过Web服务通知OA门户系统，由于系统用户多，为了不被OA系统速度拖累，使用异步方式调用Web服务。</p>
+<h4 id="解决-4"><a href="#解决-4" class="headerlink" title="解决"></a>解决</h4><p>异步调用改为生产者／消费者模式的消息队列。</p>
+<h3 id="不恰当数据结构"><a href="#不恰当数据结构" class="headerlink" title="不恰当数据结构"></a>不恰当数据结构</h3><h4 id="案例-4"><a href="#案例-4" class="headerlink" title="案例"></a>案例</h4><p>一个后台<code>RPC</code>服务器，使用<code>PerNew</code>+<code>CMS</code>收集器组合，平时对外服务<code>Minor GC</code>时间在30毫秒内，业务上需要每10分钟加载约80MB的数据文件进行分析，在内存中形成超过100万个<code>HashMap&lt;Long,Long&gt; Entry</code>，在这段时间内，<code>Minor GC</code>超过500毫秒停顿。</p>
+<h4 id="分析-4"><a href="#分析-4" class="headerlink" title="分析"></a>分析</h4><p>平时<code>Minor GC</code>时间很短，新生代绝大部分对象可清除，在<code>Minor GC</code>之后，<code>Eden</code>和<code>Survivor</code>基本处于空闲状态。</p>
+<p>在分析数据文件期间，800MB的<code>Eden</code>空间很快被填满引发<code>Minor GC</code>，但之后，新生代大部分对象存活。</p>
+<p><code>ParNew</code>收集器使用复制算法，复制算法高效建立在大部分对象朝生夕灭特性上，如果存活对象过多，将存活对象复制到<code>Survivor</code>并维持对象引用成为一个负担，<code>GC</code>时间变长。</p>
+<h4 id="解决-5"><a href="#解决-5" class="headerlink" title="解决"></a>解决</h4><p>从<code>GC</code>调优角度，可以考虑将<code>Survivor</code>空间去除，让新生代存活的对象第一次<code>GC</code>后立即进入老年代，等到<code>Major GC</code>再清理。</p>
+<p>其根本原因<code>HashMap&lt;Long,Long&gt; Entry</code>结构存储数据空间效率太低。</p>
+
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+
+
+
+
+
+
+
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2017/08/01/Ioc容器初始化源码分析/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2017/07/20/二叉树/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/SideImage.jpg);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/FaceImage.jpg" alt="游思达's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        553408524@qq.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/" target="_self">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2017/08/">八月 2017<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/07/">七月 2017<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/06/">六月 2017<span class="sidebar_archives-count">6</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/05/">五月 2017<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/archives/2017/04/">四月 2017<span class="sidebar_archives-count">4</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/Git/">Git<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java-基础/">Java 基础<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/Java基础/">Java基础<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/分布式/">分布式<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/数据结构/">数据结构<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/杂七杂八/">杂七杂八<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/框架/">框架<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/设计模式/">设计模式<span class="sidebar_archives-count">5</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+
+    <!-- Article Number  -->
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!--
+I'm glad you use this theme, the development is no so easy, I hope you can keep the copyright, I will thank you so much.
+If you still want to delete the copyrights, could you still retain the first one? Which namely "Theme Material"
+It will not impact the appearance and can give developers a lot of support :)
+
+很高兴您使用并喜欢该主题，开发不易 十分谢谢与希望您可以保留一下版权声明。
+如果您仍然想删除的话 能否只保留第一项呢？即 "Theme Material"
+它不会影响美观并可以给开发者很大的支持和动力。 :)
+-->
+
+<!-- Sidebar Divider -->
+
+    <div class="sidebar-divider"></div>
+
+
+<!-- Theme Material -->
+
+    <a href="https://github.com/viosey/hexo-theme-material"  class="sidebar-footer-text-a" target="_blank">
+        <div class="sidebar-text mdl-button mdl-js-button mdl-js-ripple-effect sidebar-footer-text-div" data-upgraded=",MaterialButton,MaterialRipple">
+            主题 - Material
+            <span class="sidebar-badge badge-circle">i</span>
+        </div>
+    </a>
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+
+    <!-- Facebook -->
+    
+
+    <!-- Google + -->
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+        <a href="https://github.com/yousida" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-github.svg);">
+                <span class="visuallyhidden">Github</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+        <a href="https://www.zhihu.com/people/you-si-da" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn" style="background-image: url(/img/footer/footer_ico-zhihu.svg);">
+                <span class="visuallyhidden">Zhihu</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©&nbsp;
+            <script type="text/javascript">
+                var fd = new Date();
+                document.write(fd.getFullYear());
+            </script>
+            &nbsp;游思达的博客
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <!--
+        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
+        It will not impact the appearance and can give developers a lot of support :)
+
+        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
+        它不会影响美观并可以给开发者很大的支持。 :)
+        -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">Hexo</a></div>
+                <div class="footer-develop-div">Theme - <a href="https://github.com/viosey/hexo-theme-material" target="_blank" class="footer-develop-a">Material</a></div>
+            </div>
+        </div>
+    
+</footer>
+
+
+                    <!-- Import File -->
+
+    <script src="/js/lazyload.min.js"></script>
+    <script src="/js/js.min.js"></script>
+
+
+
+    <script src="/js/nprogress.js"></script>
+
+
+<script type="text/javascript">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Window Load-->
+<script>
+    $(window).load(function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+</script>
+
+<!-- MathJax Load-->
+
+<script>
+    <!-- Offer LazyLoad -->
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    <!-- Start Queue -->
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>
